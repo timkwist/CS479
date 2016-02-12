@@ -12,6 +12,7 @@
 
 #include <math.h>
 #include <cstdlib>
+#include <time.h>
 
 
 /*extern float ranf();         ranf() is uniform in 0..1 */
