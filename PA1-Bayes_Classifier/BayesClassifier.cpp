@@ -1,17 +1,6 @@
-#ifndef Bayes
-#define Bayes
+#include "BayesClassifier.h"
 
-#include <iostream>
-#include <Eigen/Dense>
-#include <vector>
-#include <math.h>
-
-using namespace Eigen;
-using namespace std;
-
-extern float box_muller(float, float);
-
-vector<Vector2f> generateSamples(Vector2f mu, Matrix2f sigma)
+vector<Vector2f> BayesClassifier::generateSamples(Vector2f mu, Matrix2f sigma)
 {
 	vector<Vector2f> samples;
 	for(int i = 0; i < 10000; i++)
@@ -22,15 +11,15 @@ vector<Vector2f> generateSamples(Vector2f mu, Matrix2f sigma)
 	return samples;
 }
 
-int classifierCaseOne(Vector2f x, Vector2f muOne, Vector2f muTwo, float sigmaOne, float sigmaTwo, float priorOne = 0.5, float priorTwo = 0.5)
+int BayesClassifier::classifierCaseOne(Vector2f x, Vector2f muOne, Vector2f muTwo, float varianceOne, float varianceTwo, float priorOne, float priorTwo)
 {
-	float discrimOne = -1 * (x-muOne).transpose() * (x - muOne);
-	float discrimTwo = -1 * (x - muTwo).transpose() * (x - muTwo);
+	float discrimOne = (((1.0/varianceOne) * muOne).transpose() * x) - (1.0/(2*varianceOne)) * normSquared(muOne);
+	float discrimTwo = (((1.0/varianceTwo) * muTwo).transpose() * x) - (1.0/(2*varianceTwo)) * normSquared(muTwo);
 	
 	if(priorOne != priorTwo)
 	{
-		discrimOne = (discrimOne / (2 * sigmaOne)) + log(priorOne);
-		discrimTwo = (discrimTwo / (2 * sigmaTwo)) + log(priorTwo);
+		discrimOne += log(priorOne);
+		discrimTwo += log(priorTwo);
 	}
 	
 	if(discrimOne > discrimTwo)
@@ -43,4 +32,7 @@ int classifierCaseOne(Vector2f x, Vector2f muOne, Vector2f muTwo, float sigmaOne
 	}
 }
 
-#endif
+float BayesClassifier::normSquared(Vector2f x)
+{
+	return x.transpose() * x;
+}

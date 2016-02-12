@@ -1,6 +1,8 @@
 #include <iostream>
 #include <Eigen/Dense>
 #include <vector>
+#include "BayesClassifier.h"
+
 using namespace Eigen;
 using namespace std;
 extern vector<Vector2f> generateSamples(Vector2f mu, Matrix2f sigma);
@@ -12,10 +14,6 @@ int main()
   muTwo << 6, 6;
   stDev << 2, 0,
   	   	   0, 2;
-  vector<Vector2f> sampleOne = generateSamples(muOne, stDev),
-  					sampleTwo = generateSamples(muTwo, stDev);
-
-  					cout << sampleOne[0];
   
 
 }
