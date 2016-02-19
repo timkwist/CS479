@@ -17,6 +17,7 @@ public:
 	vector<Vector2f> generateSamples(Vector2f mu, Matrix2f sigma);
 	int classifierCaseOne(Vector2f x, Vector2f muOne, Vector2f muTwo, float varianceOne, float varianceTwo, float priorOne = 0.5, float priorTwo = 0.5);
 	int classifierCaseTwo(Vector2f x, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo, float priorOne = 0.5, float priorTwo = 0.5);
+	int minimumDistanceClassifier(Vector2f x, Vector2f muOne, Vector2f muTwo);
 private:
 	float normSquared(Vector2f x);
 };
