@@ -51,7 +51,7 @@ int BayesClassifier::classifierCaseTwo(Vector2f x, Vector2f muOne, Vector2f muTw
 
 }
 
-int minimumDistanceClassifier(Vector2f x, Vector2f muOne, Vector2f muTwo)
+int BayesClassifier::minimumDistanceClassifier(Vector2f x, Vector2f muOne, Vector2f muTwo)
 {
 	float discrimOne = -1.0 * normSquared(x-muOne);
 	float discrimTwo = -1.0 * normSquared(x-muTwo);
