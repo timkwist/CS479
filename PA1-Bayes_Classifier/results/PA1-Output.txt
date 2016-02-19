@@ -1,0 +1,12 @@
+================================================
+ Part One (A) 
+================================================
+Samples from one misclassified: 355
+Samples from two misclassified: 376
+Total misclassified: 731
+================================================
+ Part One (B) 
+================================================
+Samples from one misclassified: 548
+Samples from two misclassified: 258
+Total misclassified: 806

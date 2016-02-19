@@ -32,6 +32,25 @@ int BayesClassifier::classifierCaseOne(Vector2f x, Vector2f muOne, Vector2f muTw
 	}
 }
 
+int BayesClassifier::classifierCaseTwo(Vector2f x, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo, float priorOne,  float priorTwo)
+{
+	float discrimOne = ((sigmaOne.inverse() * muOne).transpose() * x)(0) - (0.5 * muOne.transpose() * sigmaOne.inverse() * muOne);
+	float discrimTwo = ((sigmaTwo.inverse() * muTwo).transpose() * x)(0) - (0.5 * muTwo.transpose() * sigmaTwo.inverse() * muTwo);
+
+	if(priorOne != priorTwo)
+	{
+		discrimOne += log(priorOne);
+		discrimTwo += log(priorTwo);
+	}
+
+	if(discrimOne > discrimTwo)
+		return 1;
+	else
+		return 2;
+
+
+}
+
 float BayesClassifier::normSquared(Vector2f x)
 {
 	return x.transpose() * x;
