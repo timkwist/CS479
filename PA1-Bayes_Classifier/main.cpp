@@ -11,14 +11,6 @@ using namespace std;
 
 void writeSamplesToFile(const char* fileName, vector<Vector2f> sampleOne, vector<Vector2f> sampleTwo);
 
-float errorBound(float beta, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo)
-{
-	float kb = (beta*(1-beta))/2.0;
-	kb *= (muTwo - muOne).transpose() * (beta*sigmaOne + (1-beta)*sigmaTwo).inverse() * (muTwo-muOne);
-	kb += 0.5 * log( (beta*sigmaOne + (1-beta)*sigmaTwo).determinant() / (pow(sigmaOne.determinant(), beta) * pow(sigmaTwo.determinant(), 1 - beta)));
-	return exp(-1.0 * kb);
-}
-
 int main()
 {
 	srand(time(NULL));
@@ -39,6 +31,8 @@ int main()
 	vector<Vector2f> sampleMis;
 	
 	int misclassifiedOne, misclassifiedTwo;
+
+	pair<float, float> chernoffBound; // <index, value>
 
 
 
@@ -113,10 +107,16 @@ int main()
 		}
 	}
 
+	chernoffBound = classifier.findChernoffBound(muOne, muTwo, sigmaOne, sigmaTwo);
+
 	generalOutput << "================================================\n Part One (B) - (Using the Bayesian Classifier) \n================================================" << endl;
 	generalOutput << "Samples from one misclassified: " << misclassifiedOne << endl;
 	generalOutput << "Samples from two misclassified: " << misclassifiedTwo << endl;
 	generalOutput << "Total misclassified: " << misclassifiedOne + misclassifiedTwo << endl;
+
+	generalOutput << "================================================\n Part One - Error Bounds \n================================================" << endl;
+	generalOutput << "With beta = " << chernoffBound.first << " , Chernoff Bound = " << chernoffBound.second << endl;
+	generalOutput << "With beta = 0.5, Bhattacharyya Bound = " << 5 << endl;
 
 	writeSamplesToFile("./results/Part-One.txt", sampleOne, sampleTwo);
 	writeSamplesToFile("./results/Part-OneB-Misclassified.txt", sampleMis, sampleMis);
