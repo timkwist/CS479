@@ -20,6 +20,7 @@ public:
 	int classifierCaseThree(Vector2f x, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo, float priorOne = 0.5, float priorTwo = 0.5);
 	int minimumDistanceClassifier(Vector2f x, Vector2f muOne, Vector2f muTwo);
 	pair<float, float> findChernoffBound(Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo);
+	float findBhattacharyyaBound(Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo);
 private:
 	float normSquared(Vector2f x);
 	float errorBound(float beta, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo);

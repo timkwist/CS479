@@ -107,6 +107,11 @@ pair<float, float> BayesClassifier::findChernoffBound(Vector2f muOne, Vector2f m
 	return pair<float, float>(chernoffIndex, chernoffValue);
 }
 
+float BayesClassifier::findBhattacharyyaBound(Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo)
+{
+	return errorBound(0.5, muOne, muTwo, sigmaOne, sigmaTwo);
+}
+
 float BayesClassifier::normSquared(Vector2f x)
 {
 	return x.transpose() * x;
