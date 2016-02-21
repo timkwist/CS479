@@ -36,8 +36,11 @@ int main()
 	BayesClassifier classifier;
 
 	vector<Vector2f> sampleOne, sampleTwo;
+	vector<Vector2f> sampleMis;
 	
 	int misclassifiedOne, misclassifiedTwo;
+
+
 
 
 	//================================================
@@ -71,10 +74,12 @@ int main()
 		if(classifier.classifierCaseOne(sampleOne[i], muOne, muTwo, sigmaOne(0,0), sigmaTwo(0,0)) == 2)
 		{
 			misclassifiedOne++;
+			sampleMis.push_back(sampleOne[i]);
 		}
 		if(classifier.classifierCaseOne(sampleTwo[i], muOne, muTwo, sigmaOne(0,0), sigmaTwo(0,0)) == 1)
 		{
 			misclassifiedTwo++;
+			sampleMis.push_back(sampleTwo[i]);
 		}
 	}
 
@@ -109,6 +114,7 @@ int main()
 	generalOutput << "Total misclassified: " << misclassifiedOne + misclassifiedTwo << endl;
 
 	writeSamplesToFile("./results/Part-One.txt", sampleOne, sampleTwo);
+	writeSamplesToFile("./results/Part-One-Misclassified.txt", sampleMis, sampleMis);
 
 
 	//================================================
@@ -133,6 +139,8 @@ int main()
 	sampleOne = classifier.generateSamples(muOne, sigmaOne);
 	sampleTwo = classifier.generateSamples(muTwo, sigmaTwo);
 
+	sampleMis.clear();
+
 	//================================================
 	// End Part Two Configuration
 	//================================================
@@ -141,7 +149,7 @@ int main()
 	// Begin Part Two Tests
 	//================================================
 
-	vector<Vector2f> sampleMis;
+	
 
 	for(int i = 0; i < 10000; i++)
 	{
