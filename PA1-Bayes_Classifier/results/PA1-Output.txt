@@ -1,12 +1,30 @@
 ================================================
- Part One (A) 
+ Part One (A) - (Using the Bayesian Classifier) 
 ================================================
-Samples from one misclassified: 355
-Samples from two misclassified: 376
-Total misclassified: 731
+Samples from one misclassified: 386
+Samples from two misclassified: 364
+Total misclassified: 750
 ================================================
- Part One (B) 
+ Part One (B) - (Using the Bayesian Classifier) 
 ================================================
-Samples from one misclassified: 548
-Samples from two misclassified: 258
-Total misclassified: 806
+Samples from one misclassified: 586
+Samples from two misclassified: 230
+Total misclassified: 816
+================================================
+ Part Two (A) - (Using the Bayesian Classifier) 
+================================================
+Samples from one misclassified: 864
+Samples from two misclassified: 1155
+Total misclassified: 2019
+================================================
+ Part Two (B) - (Using the Bayesian Classifier) 
+================================================
+Samples from one misclassified: 1529
+Samples from two misclassified: 893
+Total misclassified: 2422
+================================================
+ Part Three (A) - (Using the Minimum Distance Classifier) 
+================================================
+Samples from one misclassified: 356
+Samples from two misclassified: 2890
+Total misclassified: 3246
