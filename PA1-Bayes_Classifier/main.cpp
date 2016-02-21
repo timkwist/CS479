@@ -116,7 +116,7 @@ int main()
 
 	generalOutput << "================================================\n Part One - Error Bounds \n================================================" << endl;
 	generalOutput << "With beta = " << chernoffBound.first << " , Chernoff Bound = " << chernoffBound.second << endl;
-	generalOutput << "With beta = 0.5, Bhattacharyya Bound = " << 5 << endl;
+	generalOutput << "With beta = 0.5, Bhattacharyya Bound = " << classifier.findBhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo) << endl;
 
 	writeSamplesToFile("./results/Part-One.txt", sampleOne, sampleTwo);
 	writeSamplesToFile("./results/Part-OneB-Misclassified.txt", sampleMis, sampleMis);
@@ -202,10 +202,16 @@ int main()
 		}
 	}
 
+	chernoffBound = classifier.findChernoffBound(muOne, muTwo, sigmaOne, sigmaTwo);
+
 	generalOutput << "================================================\n Part Two (B) - (Using the Bayesian Classifier) \n================================================" << endl;
 	generalOutput << "Samples from one misclassified: " << misclassifiedOne << endl;
 	generalOutput << "Samples from two misclassified: " << misclassifiedTwo << endl;
 	generalOutput << "Total misclassified: " << misclassifiedOne + misclassifiedTwo << endl;
+
+	generalOutput << "================================================\n Part Two - Error Bounds \n================================================" << endl;
+	generalOutput << "With beta = " << chernoffBound.first << " , Chernoff Bound = " << chernoffBound.second << endl;
+	generalOutput << "With beta = 0.5, Bhattacharyya Bound = " << classifier.findBhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo) << endl;
 
 	writeSamplesToFile("./results/Part-Two.txt", sampleOne, sampleTwo);
 	writeSamplesToFile("./results/Part-TwoB-Misclassified.txt", sampleMis, sampleMis);
