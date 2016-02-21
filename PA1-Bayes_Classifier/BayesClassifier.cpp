@@ -90,7 +90,34 @@ int BayesClassifier::minimumDistanceClassifier(Vector2f x, Vector2f muOne, Vecto
 	}
 }
 
+pair<float, float> BayesClassifier::findChernoffBound(Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo)
+{
+	float chernoffIndex = 0.0;
+	float chernoffValue = errorBound(chernoffIndex, muOne, muTwo, sigmaOne, sigmaTwo);
+	for(float i = 0.0; i <= 1; i += 0.00001)
+	{
+		float curChernoffValue = errorBound(i, muOne, muTwo, sigmaOne, sigmaTwo);
+		if(curChernoffValue < chernoffValue)
+		{
+			chernoffIndex = i;
+			chernoffValue = curChernoffValue;
+		}
+	}
+
+	return pair<float, float>(chernoffIndex, chernoffValue);
+}
+
 float BayesClassifier::normSquared(Vector2f x)
 {
 	return x.transpose() * x;
+}
+
+float BayesClassifier::errorBound(float beta, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo)
+{
+
+	float kb = (beta*(1-beta))/2.0;
+	kb *= (muTwo - muOne).transpose() * (beta*sigmaOne + (1-beta)*sigmaTwo).inverse() * (muTwo-muOne);
+	kb += 0.5 * log( (beta*sigmaOne + (1-beta)*sigmaTwo).determinant() / (pow(sigmaOne.determinant(), beta) * pow(sigmaTwo.determinant(), 1 - beta)));
+
+	return exp(-1.0 * kb);
 }
