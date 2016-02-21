@@ -83,6 +83,8 @@ int main()
 		}
 	}
 
+	writeSamplesToFile("./results/Part-OneA-Misclassified.txt", sampleMis, sampleMis);
+
 	generalOutput << "================================================\n Part One (A) - (Using the Bayesian Classifier) \n================================================" << endl;
 	generalOutput << "Samples from one misclassified: " << misclassifiedOne << endl;
 	generalOutput << "Samples from two misclassified: " << misclassifiedTwo << endl;
@@ -91,6 +93,7 @@ int main()
 	// Begin Part B Configuration
 
 	misclassifiedOne = misclassifiedTwo = 0;
+	sampleMis.clear();
 	priorOne = 0.2;
 	priorTwo = 0.8;
 
@@ -101,10 +104,12 @@ int main()
 		if(classifier.classifierCaseOne(sampleOne[i], muOne, muTwo, sigmaOne(0,0), sigmaTwo(0,0), priorOne, priorTwo) == 2)
 		{
 			misclassifiedOne++;
+			sampleMis.push_back(sampleOne[i]);
 		}
 		if(classifier.classifierCaseOne(sampleTwo[i], muOne, muTwo, sigmaOne(0,0), sigmaTwo(0,0), priorOne, priorTwo) == 1)
 		{
 			misclassifiedTwo++;
+			sampleMis.push_back(sampleTwo[i]);
 		}
 	}
 
@@ -114,7 +119,8 @@ int main()
 	generalOutput << "Total misclassified: " << misclassifiedOne + misclassifiedTwo << endl;
 
 	writeSamplesToFile("./results/Part-One.txt", sampleOne, sampleTwo);
-	writeSamplesToFile("./results/Part-One-Misclassified.txt", sampleMis, sampleMis);
+	writeSamplesToFile("./results/Part-OneB-Misclassified.txt", sampleMis, sampleMis);
+	
 
 
 	//================================================
@@ -170,11 +176,16 @@ int main()
 	generalOutput << "Samples from two misclassified: " << misclassifiedTwo << endl;
 	generalOutput << "Total misclassified: " << misclassifiedOne + misclassifiedTwo << endl;
 
+	writeSamplesToFile("./results/Part-TwoA-Misclassified.txt", sampleMis, sampleMis);
+
 	// Begin Part B Configuration
 
 	misclassifiedOne = misclassifiedTwo = 0;
 	priorOne = 0.2;
 	priorTwo = 0.8;
+
+	sampleMis.clear();
+
 	// End Part B Configuration
 
 	for(int i = 0; i < 10000; i++)
@@ -182,10 +193,12 @@ int main()
 		if(classifier.classifierCaseThree(sampleOne[i], muOne, muTwo, sigmaOne, sigmaTwo, priorOne, priorTwo) == 2)
 		{
 			misclassifiedOne++;
+			sampleMis.push_back(sampleOne[i]);
 		}
 		if(classifier.classifierCaseThree(sampleTwo[i], muOne, muTwo, sigmaOne, sigmaTwo, priorOne, priorTwo) == 1)
 		{
 			misclassifiedTwo++;
+			sampleMis.push_back(sampleTwo[i]);
 		}
 	}
 
@@ -195,7 +208,7 @@ int main()
 	generalOutput << "Total misclassified: " << misclassifiedOne + misclassifiedTwo << endl;
 
 	writeSamplesToFile("./results/Part-Two.txt", sampleOne, sampleTwo);
-	writeSamplesToFile("./results/Part-Two-Misclassified.txt", sampleMis, sampleMis);
+	writeSamplesToFile("./results/Part-TwoB-Misclassified.txt", sampleMis, sampleMis);
 
 	//================================================
 	// End Part Two Tests
