@@ -167,7 +167,6 @@ int main()
 	misclassifiedOne = misclassifiedTwo = 0;
 	priorOne = 0.2;
 	priorTwo = 0.8;
-
 	// End Part B Configuration
 
 	for(int i = 0; i < 10000; i++)
@@ -199,16 +198,19 @@ int main()
 	//================================================
 
 	misclassifiedOne = misclassifiedTwo = 0;
+	sampleMis.clear();
 
 	for(int i = 0; i < 10000; i++)
 	{
 		if(classifier.minimumDistanceClassifier(sampleOne[i], muOne, muTwo) == 2)
 		{
 			misclassifiedOne++;
+			sampleMis.push_back(sampleOne[i]);
 		}
 		if(classifier.minimumDistanceClassifier(sampleTwo[i], muOne, muTwo) == 1)
 		{
 			misclassifiedTwo++;
+			sampleMis.push_back(sampleTwo[i]);
 		}
 	}
 
@@ -216,6 +218,8 @@ int main()
 	generalOutput << "Samples from one misclassified: " << misclassifiedOne << endl;
 	generalOutput << "Samples from two misclassified: " << misclassifiedTwo << endl;
 	generalOutput << "Total misclassified: " << misclassifiedOne + misclassifiedTwo << endl;
+
+	writeSamplesToFile("./results/Part-Three-Misclassified.txt", sampleMis, sampleMis);
 
 	generalOutput.close();
 
