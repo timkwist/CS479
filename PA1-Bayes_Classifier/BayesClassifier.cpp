@@ -121,8 +121,8 @@ float BayesClassifier::errorBound(float beta, Vector2f muOne, Vector2f muTwo, Ma
 {
 
 	float kb = (beta*(1-beta))/2.0;
-	kb *= (muTwo - muOne).transpose() * (beta*sigmaOne + (1-beta)*sigmaTwo).inverse() * (muTwo-muOne);
-	kb += 0.5 * log( (beta*sigmaOne + (1-beta)*sigmaTwo).determinant() / (pow(sigmaOne.determinant(), beta) * pow(sigmaTwo.determinant(), 1 - beta)));
+	kb *= (muOne - muTwo).transpose() * ((1-beta)*sigmaOne + (beta)*sigmaTwo).inverse() * (muOne-muTwo);
+	kb += 0.5 * log( ((1-beta)*sigmaOne + (beta)*sigmaTwo).determinant() / (pow(sigmaOne.determinant(), 1-beta) * pow(sigmaTwo.determinant(), beta)));
 
 	return exp(-1.0 * kb);
 }

@@ -1,15 +1,15 @@
 ================================================
  Part One (A) - (Using the Bayesian Classifier) 
 ================================================
-Samples from one misclassified: 372
-Samples from two misclassified: 374
-Total misclassified: 746
+Samples from one misclassified: 395
+Samples from two misclassified: 434
+Total misclassified: 829
 ================================================
  Part One (B) - (Using the Bayesian Classifier) 
 ================================================
-Samples from one misclassified: 561
-Samples from two misclassified: 245
-Total misclassified: 806
+Samples from one misclassified: 589
+Samples from two misclassified: 274
+Total misclassified: 863
 ================================================
  Part One - Error Bounds 
 ================================================
@@ -18,23 +18,23 @@ With beta = 0.5, Bhattacharyya Bound = 0.0439369
 ================================================
  Part Two (A) - (Using the Bayesian Classifier) 
 ================================================
-Samples from one misclassified: 868
-Samples from two misclassified: 1152
-Total misclassified: 2020
+Samples from one misclassified: 883
+Samples from two misclassified: 1155
+Total misclassified: 2038
 ================================================
  Part Two (B) - (Using the Bayesian Classifier) 
 ================================================
-Samples from one misclassified: 1490
-Samples from two misclassified: 878
-Total misclassified: 2368
+Samples from one misclassified: 1505
+Samples from two misclassified: 889
+Total misclassified: 2394
 ================================================
  Part Two - Error Bounds 
 ================================================
-With beta = 0.615257 , Chernoff Bound = 0.149324
+With beta = 0.384564 , Chernoff Bound = 0.149324
 With beta = 0.5, Bhattacharyya Bound = 0.164034
 ================================================
  Part Three (A) - (Using the Minimum Distance Classifier) 
 ================================================
-Samples from one misclassified: 375
-Samples from two misclassified: 2871
-Total misclassified: 3246
+Samples from one misclassified: 405
+Samples from two misclassified: 2843
+Total misclassified: 3248
