@@ -133,15 +133,59 @@ int main()
 	// End Part 1A Tests (Esimated Covaraince and Mean)
 	//================================================
 
+	//================================================
+	// Begin Part 1B Tests (Esimated Covaraince and Mean & Small Sample)
+	//================================================
 
+	vector<Vector2f> smallSampleOne, smallSampleTwo;
+
+	for(int i = 0; i < 1000; i++)
+	{
+		int idxOne = randIndex(sampleOne.size());
+		int idxTwo = randIndex(sampleTwo.size());
+
+		smallSampleOne.push_back(sampleOne[idxOne]); sampleOne.erase(sampleOne.begin() + idxOne);
+		smallSampleTwo.push_back(sampleTwo[idxTwo]); sampleTwo.erase(sampleTwo.begin() + idxTwo);
+	}
 	
+	estMuOne = MLE::calculateSampleMean(smallSampleOne);
+	estMuTwo = MLE::calculateSampleMean(smallSampleTwo);
+
+	estSigmaOne = MLE::calculateSampleCovariance(smallSampleOne, estMuOne);
+	estSigmaTwo = MLE::calculateSampleCovariance(smallSampleTwo, estMuTwo);
+
+	sampleMis.clear();
+	misclassifiedOne = misclassifiedTwo = 0;
+
+	for(int i = 0; i < 10000; i++)
+	{
+		if(classifier.classifierCaseOne(sampleOne[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 2)
+		{
+			misclassifiedOne++;
+			sampleMis.push_back(sampleOne[i]);
+		}
+		if(classifier.classifierCaseOne(sampleTwo[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 1)
+		{
+			misclassifiedTwo++;
+			sampleMis.push_back(sampleTwo[i]);
+		}
+	}
 
 
+	writeSamplesToFile("./results/Part1B-Estimated-Misclassified.txt", sampleMis, sampleMis);
 
+	generalOutput << "================================================\n Part 1B - (Esimated Parameters & Small Sample) \n================================================" << endl;
+	generalOutput << "Estimated Sample Mean: muOne=[" << estMuOne(0) << ", " << estMuOne(1) << "]" <<
+					 " muTwo=[" << estMuTwo(0) << ", " << estMuTwo(1) << "]" << endl;
+	generalOutput << "Estimated Sample Covaraince: \nsigmaOne" << endl;
+	generalOutput << estSigmaOne << endl << "sigmaTwo" << endl << estSigmaTwo << endl;
+	generalOutput << "Samples from one misclassified: " << misclassifiedOne << endl;
+	generalOutput << "Samples from two misclassified: " << misclassifiedTwo << endl;
+	generalOutput << "Total misclassified: " << misclassifiedOne + misclassifiedTwo << endl;
 
-
-
-
+	//================================================
+	// End Part 1B Tests (Esimated Covaraince and Mean & Small Sample)
+	//================================================
 
 
 
@@ -233,6 +277,61 @@ int main()
 	generalOutput << "Total misclassified: " << misclassifiedOne + misclassifiedTwo << endl;
 
 	writeSamplesToFile("./results/Part2A-Samples.txt", sampleOne, sampleTwo);
+
+	//================================================
+	// Begin Part 2B Tests (Esimated Covaraince and Mean & Small Sample)
+	//================================================
+
+	smallSampleOne.clear();
+	smallSampleTwo.clear();
+
+	for(int i = 0; i < 1000; i++)
+	{
+		int idxOne = randIndex(sampleOne.size());
+		int idxTwo = randIndex(sampleTwo.size());
+
+		smallSampleOne.push_back(sampleOne[idxOne]); sampleOne.erase(sampleOne.begin() + idxOne);
+		smallSampleTwo.push_back(sampleTwo[idxTwo]); sampleTwo.erase(sampleTwo.begin() + idxTwo);
+	}
+	
+	estMuOne = MLE::calculateSampleMean(smallSampleOne);
+	estMuTwo = MLE::calculateSampleMean(smallSampleTwo);
+
+	estSigmaOne = MLE::calculateSampleCovariance(smallSampleOne, estMuOne);
+	estSigmaTwo = MLE::calculateSampleCovariance(smallSampleTwo, estMuTwo);
+
+	sampleMis.clear();
+	misclassifiedOne = misclassifiedTwo = 0;
+
+	for(int i = 0; i < 10000; i++)
+	{
+		if(classifier.classifierCaseOne(sampleOne[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 2)
+		{
+			misclassifiedOne++;
+			sampleMis.push_back(sampleOne[i]);
+		}
+		if(classifier.classifierCaseOne(sampleTwo[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 1)
+		{
+			misclassifiedTwo++;
+			sampleMis.push_back(sampleTwo[i]);
+		}
+	}
+
+
+	writeSamplesToFile("./results/Part2B-Estimated-Misclassified.txt", sampleMis, sampleMis);
+
+	generalOutput << "================================================\n Part 2B - (Esimated Parameters & Small Sample) \n================================================" << endl;
+	generalOutput << "Estimated Sample Mean: muOne=[" << estMuOne(0) << ", " << estMuOne(1) << "]" <<
+					 " muTwo=[" << estMuTwo(0) << ", " << estMuTwo(1) << "]" << endl;
+	generalOutput << "Estimated Sample Covaraince: \nsigmaOne" << endl;
+	generalOutput << estSigmaOne << endl << "sigmaTwo" << endl << estSigmaTwo << endl;
+	generalOutput << "Samples from one misclassified: " << misclassifiedOne << endl;
+	generalOutput << "Samples from two misclassified: " << misclassifiedTwo << endl;
+	generalOutput << "Total misclassified: " << misclassifiedOne + misclassifiedTwo << endl;
+
+	//================================================
+	// End Part 2B Tests (Esimated Covaraince and Mean & Small Sample)
+	//================================================
 
 	generalOutput.close();
 
