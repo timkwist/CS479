@@ -67,6 +67,29 @@ int main(int argc, char *argv[])
 		}
 	}
 
+
+	Vector2f estMu = MLE::calculateSampleMean(sampleData);
+	Matrix2f estSigma = MLE::calculateSampleCovariance(sampleData, estMu);
+
+	cout << estMu << "\n\n" << estSigma << endl;
+
+	for(i=0; i<N; i++)
+	{
+		for(j=0; j<M; j++) 
+		{
+			train.getPixelVal(i, j, val);
+			float total = val.r + val.g + val.b;
+			float newR = (float)val.r / total;
+			float newG = (float)val.g / total;
+			float newB = (float)val.b / total;
+			if(BayesClassifier::thresholdCaseThree(Vector2f(newR, newG), estMu, estSigma))
+				newImg.setPixelVal(i, j, RGB(255, 255, 255));
+			else
+				newImg.setPixelVal(i, j, RGB(0, 0, 0));
+		}
+	}
+
+
 	writeImage("test.ppm", newImg);
 
 	return (1);

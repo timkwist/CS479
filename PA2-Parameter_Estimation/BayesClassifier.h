@@ -68,6 +68,10 @@ public:
 	 */
 	int classifierCaseThree(Vector2f x, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo, float priorOne = 0.5, float priorTwo = 0.5);
 	
+
+
+	static bool thresholdCaseThree(Vector2f x, Vector2f mu, Matrix2f sigma);
+
 	/**
 	 * Calculates the discriminants for minimum distance classifier
 	 * 
