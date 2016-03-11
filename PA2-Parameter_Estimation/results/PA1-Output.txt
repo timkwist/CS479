@@ -1,0 +1,40 @@
+================================================
+ Part 1A - (Known Parameters) 
+================================================
+Samples from one misclassified: 367
+Samples from two misclassified: 412
+Total misclassified: 779
+================================================
+ Part 1A - (Esimated Parameters) 
+================================================
+Estimated Sample Mean: muOne=[0.986453, 0.971369] muTwo=[6.01573, 5.98732]
+Estimated Sample Covaraince: 
+sigmaOne
+  3.93184 0.0288634
+0.0288634   3.99843
+sigmaTwo
+ 3.99624 0.024725
+0.024725  4.06941
+Samples from one misclassified: 368
+Samples from two misclassified: 410
+Total misclassified: 778
+================================================
+ Part 2A - (Known Parameters) 
+================================================
+Samples from one misclassified: 874
+Samples from two misclassified: 1124
+Total misclassified: 1998
+================================================
+ Part 2A - (Esimated Parameters) 
+================================================
+Estimated Sample Mean: muOne=[1.01126, 0.985544] muTwo=[6.08205, 6.03319]
+Estimated Sample Covaraince: 
+sigmaOne
+   4.04401 -0.0467978
+-0.0467978    4.02039
+sigmaTwo
+    15.8985 -0.00384094
+-0.00384094     63.1595
+Samples from one misclassified: 476
+Samples from two misclassified: 1293
+Total misclassified: 1769
