@@ -2,6 +2,7 @@
 #include <Eigen/Dense>
 #include <vector>
 #include "BayesClassifier.h"
+#include "SampleGenerator.h"
 
 #include <iostream>
 #include <fstream>
@@ -26,6 +27,7 @@ int main()
 	float priorOne, priorTwo;
 
 	BayesClassifier classifier;
+	SampleGenerator generator;
 
 	vector<Vector2f> sampleOne, sampleTwo;
 	vector<Vector2f> sampleMis;
@@ -52,8 +54,8 @@ int main()
 	priorOne = priorTwo = 0.5;
 	misclassifiedOne = misclassifiedTwo = 0;
 
-	sampleOne = classifier.generateSamples(muOne, sigmaOne);
-	sampleTwo = classifier.generateSamples(muTwo, sigmaTwo);
+	sampleOne = generator.generateSamples(muOne, sigmaOne);
+	sampleTwo = generator.generateSamples(muTwo, sigmaTwo);
 
 	//================================================
 	// End Part One Configuration
@@ -142,8 +144,8 @@ int main()
 	priorOne = priorTwo = 0.5;
 	misclassifiedOne = misclassifiedTwo = 0;
 
-	sampleOne = classifier.generateSamples(muOne, sigmaOne);
-	sampleTwo = classifier.generateSamples(muTwo, sigmaTwo);
+	sampleOne = generator.generateSamples(muOne, sigmaOne);
+	sampleTwo = generator.generateSamples(muTwo, sigmaTwo);
 
 	sampleMis.clear();
 
