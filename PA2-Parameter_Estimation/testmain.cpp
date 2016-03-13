@@ -19,7 +19,7 @@ int readImageHeader(char[], int&, int&, int&, bool&);
 int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
 
-void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB, Vector2f &estMu, Matrix2f &estSigma);
+void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB, Vector2f &estSkinMu, Matrix2f &estSkinSigma, Vector2f &estNonSkinMu, Matrix2f &estNonSkinSigma);
 void runTest(ImageType& testImage, ImageType& refImage, bool useRGB, float thresMin, float thresMax, Vector2f &estMu, Matrix2f &estSigma, const char fileOutput[]);
 
 int M, N, Q;
@@ -44,11 +44,11 @@ int main(int argc, char *argv[])
 
  	// Create the model from the training data
 
-	Vector2f estMuRGB, estMuYCC;
-	Matrix2f estSigmaRGB, estSigmaYCC;
-
-	getMLEParameters(testImage, refernceImage, true, estMuRGB, estSigmaRGB);
-	getMLEParameters(testImage, refernceImage, false, estMuYCC, estSigmaYCC);
+	Vector2f estSkinMuRGB, estSkinMuYCC, estNonSkinMuRGB, estNonSkinMuYCC;
+	Matrix2f estSkinSigmaRGB, estSkinSigmaYCC, estNonSkinSigmaRGB, estNonSkinSigmaYCC;
+	
+	getMLEParameters(testImage, refernceImage, true, estSkinMuRGB, estSkinSigmaRGB, estNonSkinMuRGB, estNonSkinSigmaRGB);
+	getMLEParameters(testImage, refernceImage, false, estSkinMuYCC, estSkinSigmaYCC, estNonSkinMuYCC, estNonSkinSigmaYCC);
 
 	readImage("train3.ppm", testImage);
 	readImage("ref3.ppm", refernceImage);
@@ -72,9 +72,9 @@ int main(int argc, char *argv[])
 	return (1);
 }
 
-void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB, Vector2f &estMu, Matrix2f &estSigma)
+void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB, Vector2f &estSkinMu, Matrix2f &estSkinSigma, Vector2f &estNonSkinMu, Matrix2f &estNonSkinSigma);
 {
-	vector<Vector2f> sampleData;
+	vector<Vector2f> sampleSkinData, sampleNonSkinData;
 
 	RGB val;
 
@@ -84,29 +84,34 @@ void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB
 	{
 		for(int j=0; j<M; j++) 
 		{
+			trainingImage.getPixelVal(i, j, val);
+			if(useRGB)
+			{
+				total = val.r + val.g + val.b;
+				x1 = (float)val.r / total;	//New Red value
+				x2 = (float)val.g / total;  //New Green Value
+			}
+			else
+			{
+				x1 = -0.169 * (float)val.r - 0.332 * (float)val.g + 0.5 * (float)val.b; //New Cb value
+				x2 = 0.5 * (float)val.r - 0.419 * (float)val.g - 0.081 * (float)val.b;  //New Cr value
+			}
 			refImage.getPixelVal(i, j, val);
 			if(val.r != 0 && val.g != 0 && val.b != 0)
 			{
-				trainingImage.getPixelVal(i, j, val);
-				if(useRGB)
-				{
-					total = val.r + val.g + val.b;
-					x1 = (float)val.r / total;	//New Red value
-					x2 = (float)val.g / total;  //New Green Value
-					sampleData.push_back(Vector2f(x1, x2));
-				}
-				else
-				{
-					x1 = -0.169 * (float)val.r - 0.332 * (float)val.g + 0.5 * (float)val.b; //New Cb value
-					x2 = 0.5 * (float)val.r - 0.419 * (float)val.g - 0.081 * (float)val.b;  //New Cr value
-					sampleData.push_back(Vector2f(x1, x2));
-				}
+				sampleSkinData.push_back(Vector2f(x1, x2));
+			}
+			else
+			{
+				sampleNonSkinData.push_back(Vector2f(x1, x2));
 			}
 		}
 	}
 
-	estMu = MLE::calculateSampleMean(sampleData);
-	estSigma = MLE::calculateSampleCovariance(sampleData, estMu);
+	estSkinMu = MLE::calculateSampleMean(sampleSkinData);
+	estSkinSigma = MLE::calculateSampleCovariance(sampleSkinData, estSkinMu);
+	estNonSkinMu = MLE::calculateSampleMean(sampleNonSkinData);
+	estNonSkinSigma = MLE::calculateSampleCovariance(sampleNonSkinData, estNonSkinMu);
 }
 
 void runTest(ImageType& testImage, ImageType& refImage, bool useRGB, float thresMin, float thresMax, Vector2f &estMu, Matrix2f &estSigma, const char fileOutput[])
