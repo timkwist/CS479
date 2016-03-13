@@ -17,7 +17,7 @@ struct RGB {
   RGB& operator=(RGB newCol)
   {
   	this->r = newCol.r;
-  	this->g = newCol.r;
+  	this->g = newCol.g;
   	this->b = newCol.b;
 
   	return *this;

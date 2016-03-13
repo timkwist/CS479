@@ -1,4 +1,5 @@
 #include "BayesClassifier.h"
+#include <math.h>
 
 int BayesClassifier::classifierCaseOne(Vector2f x, Vector2f muOne, Vector2f muTwo, float varianceOne, float varianceTwo, float priorOne, float priorTwo)
 {
@@ -64,13 +65,13 @@ int BayesClassifier::classifierCaseThree(Vector2f x, Vector2f muOne, Vector2f mu
 		return 2;
 }
 
-bool BayesClassifier::thresholdCaseThree(Vector2f x, Vector2f mu, Matrix2f sigma)
+bool BayesClassifier::thresholdCaseThree(Vector2f x, Vector2f mu, Matrix2f sigma, float threshold)
 {
-	float discrimOne = (x.transpose() * (-0.5 * sigma.inverse()) * x)
-						+ ((sigma.inverse() * mu).transpose() * x)(0)
-						+ (-0.5 * mu.transpose() * sigma.inverse() * mu)
-						+ (-0.5 * log(sigma.determinant()));
-	return (discrimOne >= .1);
+	float p = (-0.5 * (x - mu).transpose() * sigma.inverse() * (x - mu));
+
+	// cout << p << endl;
+
+	return (p > threshold);
 }
 
 int BayesClassifier::minimumDistanceClassifier(Vector2f x, Vector2f muOne, Vector2f muTwo)

@@ -70,7 +70,7 @@ public:
 	
 
 
-	static bool thresholdCaseThree(Vector2f x, Vector2f mu, Matrix2f sigma);
+	static bool thresholdCaseThree(Vector2f x, Vector2f mu, Matrix2f sigma, float threshold);
 
 	/**
 	 * Calculates the discriminants for minimum distance classifier
