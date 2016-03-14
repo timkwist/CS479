@@ -30,7 +30,7 @@ public:
 	 * @param priorTwo Optiona; 0 <= priorTwo <= 1; 1 - priorTwo = priorOne
 	 * @return 1 if discriminant of parameters for one > discriminant of parameters for two; Two otherwise
 	 */
-	int classifierCaseOne(Vector2f x, Vector2f muOne, Vector2f muTwo, float varianceOne, float varianceTwo, float priorOne = 0.5, float priorTwo = 0.5);
+	static int classifierCaseOne(Vector2f x, Vector2f muOne, Vector2f muTwo, float varianceOne, float varianceTwo, float priorOne = 0.5, float priorTwo = 0.5);
 	
 	/**
 	 * Calculate the discriminant for muOne/varianceOne, muTwo/varianceTwo against input x
@@ -48,7 +48,7 @@ public:
 	 * @param priorTwo Optiona; 0 <= priorTwo <= 1; 1 - priorTwo = priorOne
 	 * @return 1 if discriminant of parameters for one > discriminant of parameters for two; Two otherwise
 	 */
-	int classifierCaseTwo(Vector2f x, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo, float priorOne = 0.5, float priorTwo = 0.5);
+	static int classifierCaseTwo(Vector2f x, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo, float priorOne = 0.5, float priorTwo = 0.5);
 	
 	/**
 	 * Calculate the discriminant for muOne/varianceOne, muTwo/varianceTwo against input x
@@ -66,7 +66,7 @@ public:
 	 * @param priorTwo Optiona; 0 <= priorTwo <= 1; 1 - priorTwo = priorOne
 	 * @return 1 if discriminant of parameters for one > discriminant of parameters for two; Two otherwise
 	 */
-	int classifierCaseThree(Vector2f x, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo, float priorOne = 0.5, float priorTwo = 0.5);
+	static int classifierCaseThree(Vector2f x, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo, float priorOne = 0.5, float priorTwo = 0.5);
 	
 
 
@@ -83,7 +83,7 @@ public:
 	 * @param muTwo 2x1 mu vector
 	 * @return 1 if discriminant of parameters for one > discriminant of parameters for two; Two otherwise
 	 */
-	int minimumDistanceClassifier(Vector2f x, Vector2f muOne, Vector2f muTwo);
+	static int minimumDistanceClassifier(Vector2f x, Vector2f muOne, Vector2f muTwo);
 	
 	/**
 	 * Locates the Chernoff Bound by minimizing e^-k(b)
@@ -95,7 +95,7 @@ public:
 	 * @param sigmaTwo 2x2 sigma matrix
 	 * @return Pair consisting of (ChernoffIndex, e^-k(ChernoffIndex))
 	 */
-	pair<float, float> findChernoffBound(Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo);
+	static pair<float, float> findChernoffBound(Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo);
 	
 	/**
 	 * Returns e^-(k(0.5))
@@ -106,7 +106,7 @@ public:
 	 * @param sigmaTwo 2x2 sigma matrix
 	 * @return e^-(k(0.5))
 	 */
-	float findBhattacharyyaBound(Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo);
+	static float findBhattacharyyaBound(Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo);
 private:
 	/**
 	 * Returns norm squared of given vector
@@ -116,7 +116,7 @@ private:
 	 * @param x 2x1 input vector
 	 * @return transpose(x) * x
 	 */
-	float normSquared(Vector2f x);
+	static float normSquared(Vector2f x);
 
 	/**
 	 * Returns e^-k(beta) for given beta
@@ -128,7 +128,7 @@ private:
 	 * @param sigmaTwo 2x2 sigma matrix
 	 * @return e^-k(beta)
 	 */
-	float errorBound(float beta, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo);
+	static float errorBound(float beta, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo);
 };
 
 #endif

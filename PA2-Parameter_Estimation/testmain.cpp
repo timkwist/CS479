@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 	return (1);
 }
 
-void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB, Vector2f &estSkinMu, Matrix2f &estSkinSigma, Vector2f &estNonSkinMu, Matrix2f &estNonSkinSigma);
+void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB, Vector2f &estSkinMu, Matrix2f &estSkinSigma, Vector2f &estNonSkinMu, Matrix2f &estNonSkinSigma)
 {
 	vector<Vector2f> sampleSkinData, sampleNonSkinData;
 
@@ -209,7 +209,7 @@ void runTwoClassTest(ImageType& testImage, ImageType& refImage, bool useRGB, Vec
 				x2 = 0.5 * (float)val.r - 0.419 * (float)val.g - 0.081 * (float)val.b;  //New Cr value
 			}
 
-			bool classifiedAsSkin = BayesClassifier::classifierCaseThree(Vector2f(x1, x2), estSkinMu, estSkinSigma, estNonSkinMu, estNonSkinSigma);
+			bool classifiedAsSkin = BayesClassifier::classifierCaseThree(Vector2f(x1, x2), estSkinMu, estNonSkinMu, estSkinSigma, estNonSkinSigma);
 			 
 			refImage.getPixelVal(i, j, val);
 

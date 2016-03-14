@@ -27,7 +27,6 @@ int main()
 	Matrix2f sigmaOne, sigmaTwo;
 	Vector2f muOne, muTwo;
 
-	BayesClassifier classifier;
 	SampleGenerator generator;
 
 	vector<Vector2f> sampleOne, sampleTwo;
@@ -65,12 +64,12 @@ int main()
 
 	for(int i = 0; i < 10000; i++)
 	{
-		if(classifier.classifierCaseOne(sampleOne[i], muOne, muTwo, sigmaOne(0,0), sigmaTwo(0,0)) == 2)
+		if(BayesClassifier::classifierCaseOne(sampleOne[i], muOne, muTwo, sigmaOne(0,0), sigmaTwo(0,0)) == 2)
 		{
 			misclassifiedOne++;
 			sampleMis.push_back(sampleOne[i]);
 		}
-		if(classifier.classifierCaseOne(sampleTwo[i], muOne, muTwo, sigmaOne(0,0), sigmaTwo(0,0)) == 1)
+		if(BayesClassifier::classifierCaseOne(sampleTwo[i], muOne, muTwo, sigmaOne(0,0), sigmaTwo(0,0)) == 1)
 		{
 			misclassifiedTwo++;
 			sampleMis.push_back(sampleTwo[i]);
@@ -103,12 +102,12 @@ int main()
 
 	for(int i = 0; i < 10000; i++)
 	{
-		if(classifier.classifierCaseOne(sampleOne[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 2)
+		if(BayesClassifier::classifierCaseOne(sampleOne[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 2)
 		{
 			misclassifiedOne++;
 			sampleMis.push_back(sampleOne[i]);
 		}
-		if(classifier.classifierCaseOne(sampleTwo[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 1)
+		if(BayesClassifier::classifierCaseOne(sampleTwo[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 1)
 		{
 			misclassifiedTwo++;
 			sampleMis.push_back(sampleTwo[i]);
@@ -159,12 +158,12 @@ int main()
 
 	for(int i = 0; i < 10000; i++)
 	{
-		if(classifier.classifierCaseOne(sampleOne[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 2)
+		if(BayesClassifier::classifierCaseOne(sampleOne[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 2)
 		{
 			misclassifiedOne++;
 			sampleMis.push_back(sampleOne[i]);
 		}
-		if(classifier.classifierCaseOne(sampleTwo[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 1)
+		if(BayesClassifier::classifierCaseOne(sampleTwo[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 1)
 		{
 			misclassifiedTwo++;
 			sampleMis.push_back(sampleTwo[i]);
@@ -215,12 +214,12 @@ int main()
 
 	for(int i = 0; i < 10000; i++)
 	{
-		if(classifier.classifierCaseThree(sampleOne[i], muOne, muTwo, sigmaOne, sigmaTwo) == 2)
+		if(BayesClassifier::classifierCaseThree(sampleOne[i], muOne, muTwo, sigmaOne, sigmaTwo) == 2)
 		{
 			misclassifiedOne++;
 			sampleMis.push_back(sampleOne[i]);
 		}
-		if(classifier.classifierCaseThree(sampleTwo[i], muOne, muTwo, sigmaOne, sigmaTwo) == 1)
+		if(BayesClassifier::classifierCaseThree(sampleTwo[i], muOne, muTwo, sigmaOne, sigmaTwo) == 1)
 		{
 			misclassifiedTwo++;
 			sampleMis.push_back(sampleTwo[i]);
@@ -253,12 +252,12 @@ int main()
 
 	for(int i = 0; i < 10000; i++)
 	{
-		if(classifier.classifierCaseThree(sampleOne[i], estMuOne, estMuTwo, estSigmaOne, estSigmaTwo) == 2)
+		if(BayesClassifier::classifierCaseThree(sampleOne[i], estMuOne, estMuTwo, estSigmaOne, estSigmaTwo) == 2)
 		{
 			misclassifiedOne++;
 			sampleMis.push_back(sampleOne[i]);
 		}
-		if(classifier.classifierCaseThree(sampleTwo[i], estMuOne, estMuTwo, estSigmaOne, estSigmaTwo) == 1)
+		if(BayesClassifier::classifierCaseThree(sampleTwo[i], estMuOne, estMuTwo, estSigmaOne, estSigmaTwo) == 1)
 		{
 			misclassifiedTwo++;
 			sampleMis.push_back(sampleTwo[i]);
@@ -305,12 +304,12 @@ int main()
 
 	for(int i = 0; i < 10000; i++)
 	{
-		if(classifier.classifierCaseOne(sampleOne[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 2)
+		if(BayesClassifier::classifierCaseOne(sampleOne[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 2)
 		{
 			misclassifiedOne++;
 			sampleMis.push_back(sampleOne[i]);
 		}
-		if(classifier.classifierCaseOne(sampleTwo[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 1)
+		if(BayesClassifier::classifierCaseOne(sampleTwo[i], estMuOne, estMuTwo, estSigmaOne(0,0), estSigmaTwo(0,0)) == 1)
 		{
 			misclassifiedTwo++;
 			sampleMis.push_back(sampleTwo[i]);
