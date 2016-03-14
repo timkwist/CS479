@@ -69,7 +69,17 @@ public:
 	static int classifierCaseThree(Vector2f x, Vector2f muOne, Vector2f muTwo, Matrix2f sigmaOne, Matrix2f sigmaTwo, float priorOne = 0.5, float priorTwo = 0.5);
 	
 
-
+	/**
+	 * Determine whether a given 2x1 sample is a member of the Gaussian Distribution
+	 * Specified by the given mu and sigma by calculating the PDF and comparing if it is
+	 * greater than the given threshold.
+	 *
+	 * @param x 2x1 sample data
+	 * @param mu 2x1 mean of the Gaussian Distribution
+	 * @param sigma 2x2 covariance of the Gaussian Distribution
+	 * @param threshold Some float number to be used as a threshold
+	 * @return Returns true if PDF(x) ~ Gaussian(mu, sigma) > threshold; false otherwise
+	 */
 	static bool thresholdCaseThree(Vector2f x, Vector2f mu, Matrix2f sigma, float threshold);
 
 	/**
