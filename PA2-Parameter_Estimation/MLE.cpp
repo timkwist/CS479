@@ -1,4 +1,5 @@
 #include "MLE.h"
+#include <iostream>
 
 Vector2f MLE::calculateSampleMean(vector<Vector2f> data)
 {

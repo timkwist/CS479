@@ -58,7 +58,6 @@ int BayesClassifier::classifierCaseThree(Vector2f x, Vector2f muOne, Vector2f mu
 		discrimOne += log(priorOne);
 		discrimTwo += log(priorTwo);
 	}
-	cout << sigmaOne << endl;
 	if(discrimOne > discrimTwo)
 		return 1;
 	else

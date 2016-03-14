@@ -93,8 +93,15 @@ void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB
 			if(useRGB)
 			{
 				total = val.r + val.g + val.b;
-				x1 = (float)val.r / total;	//New Red value
-				x2 = (float)val.g / total;  //New Green Value
+				if(total == 0)
+				{
+					x1 = x2 = 0;
+				}
+				else
+				{
+					x1 = (float)val.r / total;	//New Red value
+					x2 = (float)val.g / total;  //New Green Value	
+				}
 			}
 			else
 			{
@@ -108,15 +115,18 @@ void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB
 			}
 			else
 			{
+				// cout << x1 << "\t" << x2 << endl;
 				sampleNonSkinData.push_back(Vector2f(x1, x2));
 			}
 		}
 	}
 
-	estSkinMu = MLE::calculateSampleMean(sampleSkinData);
-	estSkinSigma = MLE::calculateSampleCovariance(sampleSkinData, estSkinMu);
+
 	estNonSkinMu = MLE::calculateSampleMean(sampleNonSkinData);
 	estNonSkinSigma = MLE::calculateSampleCovariance(sampleNonSkinData, estNonSkinMu);
+	estSkinMu = MLE::calculateSampleMean(sampleSkinData);
+	estSkinSigma = MLE::calculateSampleCovariance(sampleSkinData, estSkinMu);
+	
 }
 
 void runThresholdTest(ImageType& testImage, ImageType& refImage, bool useRGB, float thresMin, float thresMax, Vector2f &estMu, Matrix2f &estSigma, const char fileOutput[])
