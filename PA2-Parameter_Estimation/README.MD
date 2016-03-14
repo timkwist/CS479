@@ -1,10 +1,10 @@
 CS 479/679 Pattern Recognition
 Spring 2016 – Prof. Bebis
-Programming Assignment 1 - Due: 2/22/2016
+Programming Assignment 2 - Due: 3/14/2016
 
 Team: Shane Melton, Tim Kwist
 
-2D Gaussian Distribution sample classifier
+Estimating Parameters Using Maximum Likelihood Estimation
 
 Tested on two sets of data:
 
@@ -20,29 +20,39 @@ muTwo = [6; 6]
 sigmaOne = [2 0; 0 2]
 sigmaTwo = [4 0; 0 8]
 
-Also calculates Chernoff Bound and Bhattacharyya Bound
+Part One (A): Using 10,000 samples from each distribution in Set 1, estimate parameters using Maximum Likelihood Estimation and re-classify based on estimate parameters
 
-Minimum-Distance Classifier used on Set 2 to demonstrate misuse of Minimum-Distance Classifier
+Part One (B): Using 1,000 samples from each distribution in Set 1, estimate parameters using Maximum Likelihood Estimation and re-classify based on estimate parameters
 
-Part One (A): Classify Set 1 samples, with priors = 0.5 for both distributions
+Part Two: Repeat Part One (A and B) using samples from each distribution in Set 2.
 
-Part One (B): Classify Set 1 samples, with Prior One = 0.2 and Prior Two = 0.8
+Part Three (A): Implement skin-color methodology outlined in Section 3.1 of [Yang96 "A Real-time Face Tracker"].
 
-Part One (A): Classify Set 2 samples, with priors = 0.5 for both distributions
-
-Part One (B): Classify Set 2 samples, with Prior One = 0.2 and Prior Two = 0.8
-
-Part Three: Classify Set 2 samples with Minimum-Distance Classifier
+Part Three (B): Repeat Three (A) using the YCbCr color space.
 
 Procedure to run program:
 
-make
-./BayesClassifier.exe
+Part 1 and 2:
 
-Results are in 'results' folder
+make MLE-1-2.exe
+./MLE-1-2.exe
 
-PA1-Output.txt: Displays statistics regarding number of samples misclassified for each part of program; Also gives Chernoff and Bhattacharyya Bound information
+Part 3:
+
+make MLE-3.exe
+./MLE-3.exe
+
+Results for part 1 and 2 are in 'results' folder
+
+PA1-Output.txt: Displays statistics regarding number of samples misclassified for each part of program
 
 Part-*-Misclassified.txt: List of all points misclassified for that part, in the format of sampleOne[x] sampleOne[y] sampleTwo[x] sampleTwo[y]
 
 Part-*.txt: List of all samples for given part, in the format of sampleOne[x] sampleOne[y] sampleTwo[x] sampleTwo[y]
+
+Results for part 3 are in the following files:
+
+Train#-RGB-ROC-Data.txt: Shows the False Negative and False Positive rates for each threshold using the RGB color space
+Train#-YCC-ROC-Data.txt: Shows the False Negative and False Positive rates for each threshold using the YCC color space
+Train#-RGB-2Class.txt: Shows the False Negative and False Positive rates for the 2 class Bayesian Classifier using the RGB color space
+Train#-YCC-2Class.txt: Shows the False Negative and False Positive rates for the 2 class Bayesian Classifier using the YCC color space

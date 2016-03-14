@@ -55,23 +55,23 @@ int main(int argc, char *argv[])
 	readImage("ref3.ppm", refernceImage);
 
 	cout << "Running tests for train3.ppm (RGB) ... " << endl;
-	// runThresholdTest(testImage, refernceImage, true, -1, 0, estSkinMuRGB, estSkinSigmaRGB, "Train3-RGB-ROC-Data.txt");
-	runTwoClassTest(testImage, refernceImage, true, estSkinMuRGB, estSkinSigmaRGB, estNonSkinMuRGB, estNonSkinSigmaRGB, "Train3-RGB-ROC-Data.txt");
+	runThresholdTest(testImage, refernceImage, true, -1, 0, estSkinMuRGB, estSkinSigmaRGB, "Train3-RGB-ROC-Data.txt");
+	runTwoClassTest(testImage, refernceImage, true, estSkinMuRGB, estSkinSigmaRGB, estNonSkinMuRGB, estNonSkinSigmaRGB, "Train3-RGB-2Class.txt");
 
 	cout << "Running tests for train3.ppm (YCbCr) ... " << endl;
-	// runThresholdTest(testImage, refernceImage, false, -1, 0, estSkinMuYCC, estSkinSigmaYCC, "Train3-YCC-ROC-Data.txt");
-	runTwoClassTest(testImage, refernceImage, false, estSkinMuYCC, estSkinSigmaYCC, estNonSkinMuYCC, estNonSkinSigmaYCC, "Train3-YCC-ROC-Data.txt");
+	runThresholdTest(testImage, refernceImage, false, -1, 0, estSkinMuYCC, estSkinSigmaYCC, "Train3-YCC-ROC-Data.txt");
+	runTwoClassTest(testImage, refernceImage, false, estSkinMuYCC, estSkinSigmaYCC, estNonSkinMuYCC, estNonSkinSigmaYCC, "Train3-YCC-2Class.txt");
 
 	readImage("train6.ppm", testImage);
 	readImage("ref6.ppm", refernceImage);
 
 	cout << "Running tests for train6.ppm (RGB) ... " << endl;
-	//runThresholdTest(testImage, refernceImage, true, -1, 0, estSkinMuRGB, estSkinSigmaRGB, "Train6-RGB-ROC-Data.txt");
-	runTwoClassTest(testImage, refernceImage, true, estSkinMuRGB, estSkinSigmaRGB, estNonSkinMuRGB, estNonSkinSigmaRGB, "Train6-RGB-ROC-Data.txt");
+	runThresholdTest(testImage, refernceImage, true, -1, 0, estSkinMuRGB, estSkinSigmaRGB, "Train6-RGB-ROC-Data.txt");
+	runTwoClassTest(testImage, refernceImage, true, estSkinMuRGB, estSkinSigmaRGB, estNonSkinMuRGB, estNonSkinSigmaRGB, "Train6-RGB-2Class.txt");
 
 	cout << "Running tests for train6.ppm (YCbCr) ... " << endl;
-	//runThresholdTest(testImage, refernceImage, false, -1, 0, estSkinMuYCC, estSkinSigmaYCC, "Train6-YCC-ROC-Data.txt");
-	runTwoClassTest(testImage, refernceImage, false, estSkinMuYCC, estSkinSigmaYCC, estNonSkinMuYCC, estNonSkinSigmaYCC, "Train6-YCC-ROC-Data.txt");
+	runThresholdTest(testImage, refernceImage, false, -1, 0, estSkinMuYCC, estSkinSigmaYCC, "Train6-YCC-ROC-Data.txt");
+	runTwoClassTest(testImage, refernceImage, false, estSkinMuYCC, estSkinSigmaYCC, estNonSkinMuYCC, estNonSkinSigmaYCC, "Train6-YCC-2Class.txt");
 
 	return (1);
 }
