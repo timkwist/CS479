@@ -20,7 +20,8 @@ int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
 
 void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB, Vector2f &estSkinMu, Matrix2f &estSkinSigma, Vector2f &estNonSkinMu, Matrix2f &estNonSkinSigma);
-void runTest(ImageType& testImage, ImageType& refImage, bool useRGB, float thresMin, float thresMax, Vector2f &estMu, Matrix2f &estSigma, const char fileOutput[]);
+void runThresholdTest(ImageType& testImage, ImageType& refImage, bool useRGB, float thresMin, float thresMax, Vector2f &estMu, Matrix2f &estSigma, const char fileOutput[]);
+void runTwoClassTest(ImageType& testImage, ImageType& refImage, bool useRGB, Vector2f &estSkinMu, Matrix2f &estSkinSigma, Vector2f &estNonSkinMu, Matrix2f &estNonSkinSigma, const char fileOutput[]);
 
 int M, N, Q;
 
@@ -54,19 +55,19 @@ int main(int argc, char *argv[])
 	readImage("ref3.ppm", refernceImage);
 
 	cout << "Running tests for train3.ppm (RGB) ... " << endl;
-	runTest(testImage, refernceImage, true, -1, 0, estMuRGB, estSigmaRGB, "Train3-RGB-ROC-Data.txt");
+	runThresholdTest(testImage, refernceImage, true, -1, 0, estSkinMuRGB, estSkinSigmaRGB, "Train3-RGB-ROC-Data.txt");
 
 	cout << "Running tests for train3.ppm (YCbCr) ... " << endl;
-	runTest(testImage, refernceImage, false, -1, 0, estMuYCC, estSigmaYCC, "Train3-YCC-ROC-Data.txt");
+	runThresholdTest(testImage, refernceImage, false, -1, 0, estSkinMuYCC, estSkinSigmaYCC, "Train3-YCC-ROC-Data.txt");
 
 	readImage("train6.ppm", testImage);
 	readImage("ref6.ppm", refernceImage);
 
 	cout << "Running tests for train6.ppm (RGB) ... " << endl;
-	runTest(testImage, refernceImage, true, -1, 0, estMuRGB, estSigmaRGB, "Train6-RGB-ROC-Data.txt");
+	runThresholdTest(testImage, refernceImage, true, -1, 0, estSkinMuRGB, estSkinSigmaRGB, "Train6-RGB-ROC-Data.txt");
 
 	cout << "Running tests for train6.ppm (YCbCr) ... " << endl;
-	runTest(testImage, refernceImage, false, -1, 0, estMuYCC, estSigmaYCC, "Train6-YCC-ROC-Data.txt");
+	runThresholdTest(testImage, refernceImage, false, -1, 0, estSkinMuYCC, estSkinSigmaYCC, "Train6-YCC-ROC-Data.txt");
 
 
 	return (1);
@@ -114,7 +115,7 @@ void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB
 	estNonSkinSigma = MLE::calculateSampleCovariance(sampleNonSkinData, estNonSkinMu);
 }
 
-void runTest(ImageType& testImage, ImageType& refImage, bool useRGB, float thresMin, float thresMax, Vector2f &estMu, Matrix2f &estSigma, const char fileOutput[])
+void runThresholdTest(ImageType& testImage, ImageType& refImage, bool useRGB, float thresMin, float thresMax, Vector2f &estMu, Matrix2f &estSigma, const char fileOutput[])
 {
 	vector<float> falseNegative, falsePositive;
 	float n, p, fn, fp, x1, x2, total;
@@ -181,6 +182,66 @@ void runTest(ImageType& testImage, ImageType& refImage, bool useRGB, float thres
 	{
 		generalOutput << threshold << "\t" << falseNegative[i] << "\t" << falsePositive[i] << endl;
 	}
+
+	generalOutput.close();
+}
+
+void runTwoClassTest(ImageType& testImage, ImageType& refImage, bool useRGB, Vector2f &estSkinMu, Matrix2f &estSkinSigma, Vector2f &estNonSkinMu, Matrix2f &estNonSkinSigma, const char fileOutput[])
+{
+	float falseNegative, falsePositive;
+	float n, p, fn, fp, x1, x2, total;
+	RGB val;
+
+	for(int i=0; i<N; i++)
+	{
+		for(int j=0; j<M; j++) 
+		{
+			testImage.getPixelVal(i, j, val);
+			if(useRGB)
+			{
+				total = val.r + val.g + val.b;
+				x1 = (float)val.r / total;	//New Red value
+				x2 = (float)val.g / total;  //New Green Value
+			}
+			else
+			{
+				x1 = -0.169 * (float)val.r - 0.332 * (float)val.g + 0.5 * (float)val.b; //New Cb value
+				x2 = 0.5 * (float)val.r - 0.419 * (float)val.g - 0.081 * (float)val.b;  //New Cr value
+			}
+
+			bool classifiedAsSkin = BayesClassifier::classifierCaseThree(Vector2f(x1, x2), estSkinMu, estSkinSigma, estNonSkinMu, estNonSkinSigma);
+			 
+			refImage.getPixelVal(i, j, val);
+
+			bool isSkin = (val.r != 0 && val.g != 0 && val.b != 0);
+
+			if(classifiedAsSkin)
+				p++;
+			else
+				n++;
+				
+			if(isSkin && !classifiedAsSkin)
+			{
+				fn++;
+			}
+			else if(!isSkin && classifiedAsSkin)
+			{
+				fp++;
+			}
+		}
+	}
+	
+	falseNegative = fn / n;
+	falsePositive = fp / p;
+	
+	ofstream generalOutput;
+
+	generalOutput.open(fileOutput);
+
+	generalOutput << "Two-Class (Skin vs Non-Skin) Results:" << endl;
+
+	generalOutput << "False Negative: " << falseNegative << endl;
+	generalOutput << "False Positive: " << falsePositive << endl;
 
 	generalOutput.close();
 }
