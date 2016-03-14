@@ -11,4 +11,4 @@ MLE-3.exe: $(OBJ) main-part3.o
 
 clean:
 	rm -rf *.o
-	rm BayesClassifier
+	rm -rf *.exe
