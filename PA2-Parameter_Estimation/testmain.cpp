@@ -55,20 +55,23 @@ int main(int argc, char *argv[])
 	readImage("ref3.ppm", refernceImage);
 
 	cout << "Running tests for train3.ppm (RGB) ... " << endl;
-	runThresholdTest(testImage, refernceImage, true, -1, 0, estSkinMuRGB, estSkinSigmaRGB, "Train3-RGB-ROC-Data.txt");
+	// runThresholdTest(testImage, refernceImage, true, -1, 0, estSkinMuRGB, estSkinSigmaRGB, "Train3-RGB-ROC-Data.txt");
+	runTwoClassTest(testImage, refernceImage, true, estSkinMuRGB, estSkinSigmaRGB, estNonSkinMuRGB, estNonSkinSigmaRGB, "Train3-RGB-ROC-Data.txt");
 
 	cout << "Running tests for train3.ppm (YCbCr) ... " << endl;
-	runThresholdTest(testImage, refernceImage, false, -1, 0, estSkinMuYCC, estSkinSigmaYCC, "Train3-YCC-ROC-Data.txt");
+	// runThresholdTest(testImage, refernceImage, false, -1, 0, estSkinMuYCC, estSkinSigmaYCC, "Train3-YCC-ROC-Data.txt");
+	runTwoClassTest(testImage, refernceImage, false, estSkinMuYCC, estSkinSigmaYCC, estNonSkinMuYCC, estNonSkinSigmaYCC, "Train3-YCC-ROC-Data.txt");
 
 	readImage("train6.ppm", testImage);
 	readImage("ref6.ppm", refernceImage);
 
 	cout << "Running tests for train6.ppm (RGB) ... " << endl;
-	runThresholdTest(testImage, refernceImage, true, -1, 0, estSkinMuRGB, estSkinSigmaRGB, "Train6-RGB-ROC-Data.txt");
+	//runThresholdTest(testImage, refernceImage, true, -1, 0, estSkinMuRGB, estSkinSigmaRGB, "Train6-RGB-ROC-Data.txt");
+	runTwoClassTest(testImage, refernceImage, true, estSkinMuRGB, estSkinSigmaRGB, estNonSkinMuRGB, estNonSkinSigmaRGB, "Train6-RGB-ROC-Data.txt");
 
 	cout << "Running tests for train6.ppm (YCbCr) ... " << endl;
-	runThresholdTest(testImage, refernceImage, false, -1, 0, estSkinMuYCC, estSkinSigmaYCC, "Train6-YCC-ROC-Data.txt");
-
+	//runThresholdTest(testImage, refernceImage, false, -1, 0, estSkinMuYCC, estSkinSigmaYCC, "Train6-YCC-ROC-Data.txt");
+	runTwoClassTest(testImage, refernceImage, false, estSkinMuYCC, estSkinSigmaYCC, estNonSkinMuYCC, estNonSkinSigmaYCC, "Train6-YCC-ROC-Data.txt");
 
 	return (1);
 }
@@ -80,6 +83,7 @@ void getMLEParameters(ImageType& trainingImage, ImageType& refImage, bool useRGB
 	RGB val;
 
  	float total, x1, x2;
+ 	total = x1 = x2 = 0;
 
 	for(int i=0; i<N; i++)
 	{
@@ -191,6 +195,8 @@ void runTwoClassTest(ImageType& testImage, ImageType& refImage, bool useRGB, Vec
 	float falseNegative, falsePositive;
 	float n, p, fn, fp, x1, x2, total;
 	RGB val;
+	ImageType writeNewImage(N, M, Q);
+	falseNegative = falsePositive = n = p = fn = fp = x1 = x2 = total = 0;
 
 	for(int i=0; i<N; i++)
 	{
@@ -209,27 +215,40 @@ void runTwoClassTest(ImageType& testImage, ImageType& refImage, bool useRGB, Vec
 				x2 = 0.5 * (float)val.r - 0.419 * (float)val.g - 0.081 * (float)val.b;  //New Cr value
 			}
 
-			bool classifiedAsSkin = BayesClassifier::classifierCaseThree(Vector2f(x1, x2), estSkinMu, estNonSkinMu, estSkinSigma, estNonSkinSigma);
-			 
+			bool classifiedAsSkin = BayesClassifier::classifierCaseThree(Vector2f(x1, x2), estSkinMu, estNonSkinMu, estSkinSigma, estNonSkinSigma) == 1;
+			if(classifiedAsSkin)
+			{
+				writeNewImage.setPixelVal(i, j, RGB(0, 0, 0));
+			}
+			else
+			{
+				writeNewImage.setPixelVal(i, j, RGB(255, 255, 255));
+			}
 			refImage.getPixelVal(i, j, val);
 
 			bool isSkin = (val.r != 0 && val.g != 0 && val.b != 0);
 
 			if(classifiedAsSkin)
+			{
 				p++;
+			}
 			else
+			{
 				n++;
+			}
 				
-			if(isSkin && !classifiedAsSkin)
+			if(!classifiedAsSkin && isSkin)
 			{
 				fn++;
 			}
-			else if(!isSkin && classifiedAsSkin)
+			else if(classifiedAsSkin && !isSkin)
 			{
 				fp++;
 			}
 		}
 	}
+
+	writeImage("write.ppm", writeNewImage);
 	
 	falseNegative = fn / n;
 	falsePositive = fp / p;
@@ -240,8 +259,8 @@ void runTwoClassTest(ImageType& testImage, ImageType& refImage, bool useRGB, Vec
 
 	generalOutput << "Two-Class (Skin vs Non-Skin) Results:" << endl;
 
-	generalOutput << "False Negative: " << falseNegative << endl;
-	generalOutput << "False Positive: " << falsePositive << endl;
+	generalOutput << "False Negative: " << fn << " / " << n << " = " << falseNegative << endl;
+	generalOutput << "False Positive: " << fp << " / " << p << " = " << falsePositive << endl;
 
 	generalOutput.close();
 }
