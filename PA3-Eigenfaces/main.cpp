@@ -19,6 +19,7 @@ vector<VectorXi> readInTrainingFaces(const char *path, vector<VectorXi> &trainin
 int main()
 {
     vector<VectorXi> trainingFaces;
+    MatrixXf A, eigenvectors;
     VectorXf averageFace;
     /**
      * TRAINING MODE
@@ -37,6 +38,14 @@ int main()
         averageFace += (*it).cast<float>();
     }
     averageFace /= trainingFaces.size();
+    A = MatrixXf(averageFace.rows(), trainingFaces.size());
+    for(vector<VectorXi>::size_type i = 0; i < trainingFaces.size(); i++)
+    {
+        A.col(i) = trainingFaces[i].cast<float>() - averageFace;
+    }
+    eigenvectors = MatrixXf(trainingFaces.size(), trainingFaces.size());
+    eigenvectors = A.transpose()*A;
+    cout << eigenvectors.eigenvalues();
     //================================================
     // Interactive: Decide how many faces to keep
     //================================================
