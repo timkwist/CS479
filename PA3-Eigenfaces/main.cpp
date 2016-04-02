@@ -18,20 +18,25 @@ vector<VectorXi> readInTrainingFaces(const char *path, vector<VectorXi> &trainin
 
 int main()
 {
+    vector<VectorXi> trainingFaces;
+    VectorXf averageFace;
     /**
      * TRAINING MODE
      */
     //================================================
     // Read in Training Faces
     //================================================
-    vector<VectorXi> trainingFaces;
     readInTrainingFaces("./fb_H", trainingFaces);
-    cout << trainingFaces.size() << "\n";
-    cout << trainingFaces[0].rows() << " " << trainingFaces[0].cols();
     //================================================
     // Compute Average Face and Eigenfaces
     //================================================
-    
+    averageFace = VectorXf(trainingFaces[0].rows());
+    averageFace.fill(0);
+    for(auto it = trainingFaces.begin(); it != trainingFaces.end(); it++)
+    {
+        averageFace += (*it).cast<float>();
+    }
+    averageFace /= trainingFaces.size();
     //================================================
     // Interactive: Decide how many faces to keep
     //================================================
@@ -84,11 +89,9 @@ vector<VectorXi> readInTrainingFaces(const char *path, vector<VectorXi> &trainin
             strcat(name, path);
             strcat(name, "/");
             strcat(name, ent->d_name);
-            cout << name << endl;
 
             // read training images' headers
             readImageHeader(name, rows, cols, levels, type);
-            cout << rows << " " << cols << " " << levels << endl;
             // allocate memory for the image array
             ImageType currentImage(rows, cols, levels);
 
