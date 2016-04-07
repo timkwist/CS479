@@ -49,6 +49,8 @@ int readImage(char[], ImageType&);
 /* Internal methods */
 vector<VectorXi> readInTrainingFaces(const char *path, vector<VectorXi> &trainingFaces);
 void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
+float distanceInFaceSpace(VectorXi originalFace, VectorXi newFace);
+
 
 
 
@@ -186,4 +188,9 @@ void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, Ma
     output.open(fileName);
     output << eigenfaces;
     output.close();
+}
+
+float distanceInFaceSpace(VectorXi originalFace, VectorXi newFace)
+{
+	return (originalFace - newFace).norm();
 }
