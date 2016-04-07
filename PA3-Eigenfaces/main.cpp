@@ -45,18 +45,25 @@ namespace Eigen
 /* External methods */
 int readImageHeader(char[], int&, int&, int&, bool&);
 int readImage(char[], ImageType&);
+int writeImage(char[], ImageType&);
 
 /* Internal methods */
 vector<VectorXi> readInTrainingFaces(const char *path, vector<VectorXi> &trainingFaces);
 void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
 float distanceInFaceSpace(VectorXi originalFace, VectorXi newFace);
 
+void writeFace(VectorXf theFace, char *fileName);
+
+
+void readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
+
+bool fileExists(const char *filename);
 
 
 
 int main()
 {
-    
+
     vector<VectorXi> trainingFaces;
     MatrixXf eigenFaces;
     VectorXf averageFace;
@@ -70,41 +77,44 @@ int main()
     //================================================
     // Compute Average Face and Eigenfaces
     //================================================
-    computeEigenFaces(trainingFaces, averageFace, eigenFaces, "fb_H");
+    // computeEigenFaces(trainingFaces, averageFace, eigenFaces, "fb_H");
+    readSavedFaces(averageFace, eigenFaces, "fb_H");
 
-    
+    // cout << eigenFaces.rows() << "   " << averageFace.rows() << endl;
+    writeFace(eigenFaces.col(0), "testing2.pgm");
+
 
     //================================================
     // Interactive: Decide how many faces to keep
     //================================================
-    
+
     //================================================
     // Project training face image onto eigenspace
     //================================================
-    
+
     //================================================
     // Compute representation in this space
     //================================================
-    
+
     //================================================
     // Store coefficients, average face, and eigenfaces
     //================================================
-    
+
     /**
      * TESTING MODE
      */
     //================================================
     // Read in coefficients, average face, eigenfaces
     //================================================
-    
+
     //================================================
     // Evaluate face recognition performance from test set
     // - Project onto eigenspace
     // - compute coefficients
     // - Find closest match in face space
     //================================================
-    
-    
+
+
 
 }
 
@@ -153,12 +163,41 @@ vector<VectorXi> readInTrainingFaces(const char *path, vector<VectorXi> &trainin
     return trainingFaces;
 }
 
+void writeFace(VectorXf theFace, char *fileName)
+{
+    int rows, cols, levels;
+    bool type;
+    readImageHeader("fb_H/00001_930831_fb_a.pgm", rows, cols, levels, type);
+
+    ImageType theImage(rows, cols, levels);
+
+    float min, max, mean, val;
+    min = theFace.minCoeff();
+    max = theFace.maxCoeff();
+    mean = theFace.mean();
+
+    for(int i = 0; i < rows; i++)
+    {
+        for(int j = 0; j < cols; j++)
+        {
+            val = (theFace[i*cols + j] - min) / (max - min);
+            theImage.setPixelVal(i, j, val*255);
+        }
+        // cout << endl;
+    }
+
+    writeImage(fileName, theImage);
+
+}
+
 void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, const char *path)
 {
     char fileName[100];
     EigenSolver<MatrixXf> solver;
     MatrixXf A;
     ofstream output;
+
+    MatrixXf eigenVectors;
 
 
     averageFace = VectorXf(trainingFaces[0].rows());
@@ -168,19 +207,28 @@ void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, Ma
         averageFace += (*it).cast<float>();
     }
     averageFace /= trainingFaces.size();
+
+    sprintf(fileName, "%s-avg-binary.dat", path);
+
+    Eigen::write_binary(fileName, averageFace);
+
     A = MatrixXf(averageFace.rows(), trainingFaces.size());
     for(vector<VectorXi>::size_type i = 0; i < trainingFaces.size(); i++)
     {
         A.col(i) = trainingFaces[i].cast<float>() - averageFace;
     }
-    eigenfaces = MatrixXf(trainingFaces.size(), trainingFaces.size());
-    eigenfaces = A.transpose()*A;
-    solver.compute(eigenfaces, /* Compute eigenvectors = */ true);
-    
+    eigenVectors = MatrixXf(trainingFaces.size(), trainingFaces.size());
+    eigenVectors = A.transpose()*A;
+    solver.compute(eigenVectors, /* Compute eigenvectors = */ true);
+
+    eigenfaces = MatrixXf(averageFace.rows(), trainingFaces.size());
+
+    eigenfaces = A * solver.eigenvectors().real();
+
     // Eigen saves eigenvectors in a strange format, so writing them to a file
     // and then reading them back in saves them in a more "expected" format
     sprintf(fileName, "%s-binary.dat", path);
-    Eigen::write_binary(fileName, solver.eigenvectors());
+    Eigen::write_binary(fileName, eigenfaces);
     Eigen::read_binary(fileName,eigenfaces);
 
     // Save eigenvectors to text file as well for viewing outside program
@@ -190,7 +238,32 @@ void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, Ma
     output.close();
 }
 
+void readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *path)
+{
+    char fileName[100];
+
+    sprintf(fileName, "%s-binary.dat", path);
+
+    if(fileExists(fileName))
+    {
+        Eigen::read_binary(fileName, eigenfaces);
+    }
+
+    sprintf(fileName, "%s-avg-binary.dat", path);
+
+    if(fileExists(fileName))
+    {
+        Eigen::read_binary(fileName, averageFace);
+    }
+}
+
 float distanceInFaceSpace(VectorXi originalFace, VectorXi newFace)
 {
 	return (originalFace - newFace).norm();
+}
+
+bool fileExists(const char *filename)
+{
+    ifstream ifile(filename);
+    return ifile;
 }
