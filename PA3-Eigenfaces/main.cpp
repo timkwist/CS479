@@ -51,21 +51,17 @@ int writeImage(char[], ImageType&);
 vector<VectorXi> readInTrainingFaces(const char *path, vector<VectorXi> &trainingFaces);
 void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
 float distanceInFaceSpace(VectorXi originalFace, VectorXi newFace);
-
 void writeFace(VectorXf theFace, char *fileName);
-
-
-void readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
-
+bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
 bool fileExists(const char *filename);
-
+void projectOntoEigenspace(VectorXi newFace, VectorXi averageFace, MatrixXf eigenfaces);
 
 
 int main()
 {
 
     vector<VectorXi> trainingFaces;
-    MatrixXf eigenFaces;
+    MatrixXf eigenfaces;
     VectorXf averageFace;
     /**
      * TRAINING MODE
@@ -77,11 +73,18 @@ int main()
     //================================================
     // Compute Average Face and Eigenfaces
     //================================================
-    // computeEigenFaces(trainingFaces, averageFace, eigenFaces, "fb_H");
-    readSavedFaces(averageFace, eigenFaces, "fb_H");
+    cout << "Reading in saved faces, if possible" << endl;
+    if(readSavedFaces(averageFace, eigenfaces, "fb_H") == false) // faces haven't been computed yet
+    {
+    	cout << "No saved faces available, computing faces instead" << endl;
+    	computeEigenFaces(trainingFaces, averageFace, eigenfaces, "fb_H");
+    }
+    cout << "Eigenfaces rows: " << eigenfaces.rows() << endl;
+    cout << "Eigenfaces cols: " << eigenfaces.cols() << endl;
+    cout << "Average Face rows: " << averageFace.rows() << endl;
+    cout << "Average Face cols: " << averageFace.cols() << endl;
 
-    // cout << eigenFaces.rows() << "   " << averageFace.rows() << endl;
-    writeFace(eigenFaces.col(0), "testing2.pgm");
+    writeFace(eigenfaces.col(0), "testing2.pgm");
 
 
     //================================================
@@ -171,10 +174,11 @@ void writeFace(VectorXf theFace, char *fileName)
 
     ImageType theImage(rows, cols, levels);
 
-    float min, max, mean, val;
+    float min, max, val;
+    // float mean;
     min = theFace.minCoeff();
     max = theFace.maxCoeff();
-    mean = theFace.mean();
+    // mean = theFace.mean();
 
     for(int i = 0; i < rows; i++)
     {
@@ -238,7 +242,7 @@ void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, Ma
     output.close();
 }
 
-void readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *path)
+bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *path)
 {
     char fileName[100];
 
@@ -248,6 +252,10 @@ void readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *pat
     {
         Eigen::read_binary(fileName, eigenfaces);
     }
+    else
+    {
+    	return false; 
+    }
 
     sprintf(fileName, "%s-avg-binary.dat", path);
 
@@ -255,6 +263,12 @@ void readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *pat
     {
         Eigen::read_binary(fileName, averageFace);
     }
+    else
+    {
+    	return false;
+    }
+
+    return true;
 }
 
 float distanceInFaceSpace(VectorXi originalFace, VectorXi newFace)
@@ -266,4 +280,20 @@ bool fileExists(const char *filename)
 {
     ifstream ifile(filename);
     return ifile;
+}
+
+void projectOntoEigenspace(VectorXi newFace, VectorXi averageFace, MatrixXf eigenfaces)
+{
+	vector<float> faceCoefficients;
+	VectorXf normalizedFace = newFace.cast<float>() - averageFace.cast<float();
+	VectorXf transposedFace = normalizedFace.transpose();
+	VectorXf projectedFace(averageFace.rows());
+	projectedFace.fill(0);
+	for(int i = 0; i < eigenfaces.cols(); i++)
+	{
+		float a = transposedFace * eigenfaces.col(i);
+		faceCoefficients.push_back(a);
+		projectedFace += faceCoefficients[i] * normalizedFace;
+
+	}
 }
