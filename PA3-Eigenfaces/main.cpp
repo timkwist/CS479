@@ -48,19 +48,19 @@ int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
 
 /* Internal methods */
-vector<VectorXi> readInTrainingFaces(const char *path, vector<VectorXi> &trainingFaces);
-void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
-float distanceInFaceSpace(VectorXi originalFace, VectorXi newFace);
+vector<VectorXf> readInTrainingFaces(const char *path, vector<VectorXf> &trainingFaces);
+void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
+float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace);
 void writeFace(VectorXf theFace, char *fileName);
 bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
 bool fileExists(const char *filename);
-VectorXf projectOntoEigenspace(VectorXi newFace, VectorXi averageFace, MatrixXf eigenfaces);
+VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces);
 
 
 int main()
 {
 
-    vector<VectorXi> trainingFaces;
+    vector<VectorXf> trainingFaces;
     MatrixXf eigenfaces;
     VectorXf averageFace;
     /**
@@ -115,7 +115,7 @@ int main()
 
 }
 
-vector<VectorXi> readInTrainingFaces(const char *path, vector<VectorXi> &trainingFaces)
+vector<VectorXf> readInTrainingFaces(const char *path, vector<VectorXf> &trainingFaces)
 {
     DIR *dir;
     struct dirent *ent;
@@ -128,7 +128,7 @@ vector<VectorXi> readInTrainingFaces(const char *path, vector<VectorXi> &trainin
                 continue;
             bool type;
             int rows, cols, levels;
-            VectorXi currentFace;
+            VectorXf currentFace;
             char name[50] = "";
             strcat(name, path);
             strcat(name, "/");
@@ -142,7 +142,7 @@ vector<VectorXi> readInTrainingFaces(const char *path, vector<VectorXi> &trainin
             // read image
             readImage(name, currentImage);
 
-            currentFace = VectorXi(rows*cols);
+            currentFace = VectorXf(rows*cols);
             for(int i = 0; i < rows; i++)
             {
                 for(int j = 0; j < cols; j++)
@@ -188,7 +188,7 @@ void writeFace(VectorXf theFace, char *fileName)
 
 }
 
-void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, const char *path)
+void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, const char *path)
 {
     char fileName[100];
     EigenSolver<MatrixXf> solver;
@@ -202,7 +202,7 @@ void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, Ma
     averageFace.fill(0);
     for(auto it = trainingFaces.begin(); it != trainingFaces.end(); it++)
     {
-        averageFace += (*it).cast<float>();
+        averageFace += (*it);
     }
     averageFace /= trainingFaces.size();
 
@@ -211,9 +211,9 @@ void computeEigenFaces(vector<VectorXi> trainingFaces, VectorXf &averageFace, Ma
     Eigen::write_binary(fileName, averageFace);
 
     A = MatrixXf(averageFace.rows(), trainingFaces.size());
-    for(vector<VectorXi>::size_type i = 0; i < trainingFaces.size(); i++)
+    for(vector<VectorXf>::size_type i = 0; i < trainingFaces.size(); i++)
     {
-        A.col(i) = trainingFaces[i].cast<float>() - averageFace;
+        A.col(i) = trainingFaces[i] - averageFace;
     }
     eigenVectors = MatrixXf(trainingFaces.size(), trainingFaces.size());
     eigenVectors = A.transpose()*A;
@@ -265,7 +265,7 @@ bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *pat
     return true;
 }
 
-float distanceInFaceSpace(VectorXi originalFace, VectorXi newFace)
+float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace)
 {
 	return (originalFace - newFace).norm();
 }
@@ -276,10 +276,10 @@ bool fileExists(const char *filename)
     return ifile;
 }
 
-VectorXf projectOntoEigenspace(VectorXi newFace, VectorXi averageFace, MatrixXf eigenfaces)
+VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces)
 {
 	vector<float> faceCoefficients;
-	VectorXf normalizedFace = newFace.cast<float>() - averageFace.cast<float>();
+	VectorXf normalizedFace = newFace - averageFace;
 	VectorXf transposedFace = normalizedFace.transpose();
 	VectorXf projectedFace(averageFace.rows());
 	projectedFace.fill(0);
