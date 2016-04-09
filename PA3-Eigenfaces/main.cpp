@@ -54,7 +54,7 @@ float distanceInFaceSpace(VectorXi originalFace, VectorXi newFace);
 void writeFace(VectorXf theFace, char *fileName);
 bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
 bool fileExists(const char *filename);
-void projectOntoEigenspace(VectorXi newFace, VectorXi averageFace, MatrixXf eigenfaces);
+VectorXf projectOntoEigenspace(VectorXi newFace, VectorXi averageFace, MatrixXf eigenfaces);
 
 
 int main()
@@ -67,22 +67,16 @@ int main()
      * TRAINING MODE
      */
     //================================================
-    // Read in Training Faces
-    //================================================
-    readInTrainingFaces("./fb_H", trainingFaces);
-    //================================================
     // Compute Average Face and Eigenfaces
     //================================================
     cout << "Reading in saved faces, if possible" << endl;
     if(readSavedFaces(averageFace, eigenfaces, "fb_H") == false) // faces haven't been computed yet
     {
     	cout << "No saved faces available, computing faces instead" << endl;
+        readInTrainingFaces("./fb_H", trainingFaces);
     	computeEigenFaces(trainingFaces, averageFace, eigenfaces, "fb_H");
     }
-    cout << "Eigenfaces rows: " << eigenfaces.rows() << endl;
-    cout << "Eigenfaces cols: " << eigenfaces.cols() << endl;
-    cout << "Average Face rows: " << averageFace.rows() << endl;
-    cout << "Average Face cols: " << averageFace.cols() << endl;
+
 
     writeFace(eigenfaces.col(0), "testing2.pgm");
 
@@ -282,7 +276,7 @@ bool fileExists(const char *filename)
     return ifile;
 }
 
-void projectOntoEigenspace(VectorXi newFace, VectorXi averageFace, MatrixXf eigenfaces)
+VectorXf projectOntoEigenspace(VectorXi newFace, VectorXi averageFace, MatrixXf eigenfaces)
 {
 	vector<float> faceCoefficients;
 	VectorXf normalizedFace = newFace.cast<float>() - averageFace.cast<float>();
@@ -296,4 +290,6 @@ void projectOntoEigenspace(VectorXi newFace, VectorXi averageFace, MatrixXf eige
 		projectedFace += (faceCoefficients[i] * normalizedFace);
 
 	}
+
+    return projectedFace;
 }
