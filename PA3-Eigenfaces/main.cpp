@@ -285,15 +285,15 @@ bool fileExists(const char *filename)
 void projectOntoEigenspace(VectorXi newFace, VectorXi averageFace, MatrixXf eigenfaces)
 {
 	vector<float> faceCoefficients;
-	VectorXf normalizedFace = newFace.cast<float>() - averageFace.cast<float();
+	VectorXf normalizedFace = newFace.cast<float>() - averageFace.cast<float>();
 	VectorXf transposedFace = normalizedFace.transpose();
 	VectorXf projectedFace(averageFace.rows());
 	projectedFace.fill(0);
 	for(int i = 0; i < eigenfaces.cols(); i++)
 	{
-		float a = transposedFace * eigenfaces.col(i);
+		float a = (transposedFace * eigenfaces.col(i))(0,0);
 		faceCoefficients.push_back(a);
-		projectedFace += faceCoefficients[i] * normalizedFace;
+		projectedFace += (faceCoefficients[i] * normalizedFace);
 
 	}
 }
