@@ -73,12 +73,19 @@ int main()
     if(readSavedFaces(averageFace, eigenfaces, "fb_H") == false) // faces haven't been computed yet
     {
     	cout << "No saved faces available, computing faces instead" << endl;
-        readInTrainingFaces("./fb_H", trainingFaces);
+        
     	computeEigenFaces(trainingFaces, averageFace, eigenfaces, "fb_H");
     }
 
+    readInTrainingFaces("./fb_H", trainingFaces);
 
-    writeFace(eigenfaces.col(0), "testing2.pgm");
+    VectorXf newFace(averageFace.rows());
+
+    newFace = projectOntoEigenspace(trainingFaces[0], averageFace, eigenfaces);
+
+    writeFace(newFace, "newFace.pgm");
+
+    cout << distanceInFaceSpace(trainingFaces[0], newFace) << endl;
 
 
     //================================================
@@ -276,18 +283,19 @@ bool fileExists(const char *filename)
     return ifile;
 }
 
+
 VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces)
 {
 	vector<float> faceCoefficients;
 	VectorXf normalizedFace = newFace - averageFace;
-	VectorXf transposedFace = normalizedFace.transpose();
+	RowVectorXf transposedFace = normalizedFace.transpose();
 	VectorXf projectedFace(averageFace.rows());
 	projectedFace.fill(0);
 	for(int i = 0; i < eigenfaces.cols(); i++)
 	{
-		float a = (transposedFace * eigenfaces.col(i))(0,0);
+		float a = (eigenfaces.col(i).transpose() * normalizedFace)(0,0);
 		faceCoefficients.push_back(a);
-		projectedFace += (faceCoefficients[i] * normalizedFace);
+		projectedFace += (faceCoefficients[i] * eigenfaces.col(i));
 
 	}
 
