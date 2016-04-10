@@ -56,6 +56,7 @@ bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *pat
 bool fileExists(const char *filename);
 VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces);
 
+void normalizeEigenFaces(MatrixXf &eigenfaces);
 
 int main()
 {
@@ -78,6 +79,12 @@ int main()
     }
 
     readInTrainingFaces("./fb_H", trainingFaces);
+
+
+    normalizeEigenFaces(eigenfaces);
+
+    cout << "face 0 norm = " << eigenfaces.col(0).norm() << endl;
+
 
     VectorXf newFace(averageFace.rows());
 
@@ -300,4 +307,12 @@ VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf 
 	}
 
     return projectedFace;
+}
+
+void normalizeEigenFaces(MatrixXf &eigenfaces)
+{
+    for(int i = 0; i < eigenfaces.cols(); i++)
+    {
+        eigenfaces.col(i).normalize();  
+    }
 }
