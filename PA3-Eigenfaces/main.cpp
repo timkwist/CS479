@@ -48,7 +48,8 @@ int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
 
 /* Internal methods */
-vector<VectorXf> readInTrainingFaces(const char *path, vector<VectorXf> &trainingFaces);
+void readInFaces(const char *path, vector<VectorXf> &trainingFaces);
+void readInFaces(const char *path, vector<pair<string, VectorXf> > &trainingFaces);
 void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
 float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace);
 void writeFace(VectorXf theFace, char *fileName);
@@ -72,7 +73,7 @@ int main()
     // Compute Average Face and Eigenfaces and Eigenvalues
     //================================================
 
-    readInTrainingFaces("./fa_H", trainingFaces);
+    readInFaces("./fa_H", trainingFaces);
 
     cout << "Reading in saved faces, if possible" << endl;
     if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa_H") == false) // faces haven't been computed yet
@@ -143,7 +144,7 @@ int main()
 
 }
 
-vector<VectorXf> readInTrainingFaces(const char *path, vector<VectorXf> &trainingFaces)
+void readInFaces(const char *path, vector<VectorXf> &trainingFaces)
 {
     DIR *dir;
     struct dirent *ent;
@@ -184,8 +185,49 @@ vector<VectorXf> readInTrainingFaces(const char *path, vector<VectorXf> &trainin
         }
         closedir (dir);
     }
+}
 
-    return trainingFaces;
+void readInFaces(const char *path, vector<pair<string, VectorXf> > &trainingFaces)
+{
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir (path)) != NULL)
+    {
+        /* print all the files and directories within directory */
+        while ((ent = readdir (dir)) != NULL)
+        {
+            if(ent->d_name[0] == '.')
+                continue;
+            bool type;
+            int rows, cols, levels;
+            VectorXf currentFace;
+            char name[50] = "";
+            strcat(name, path);
+            strcat(name, "/");
+            strcat(name, ent->d_name);
+
+            // read training images' headers
+            readImageHeader(name, rows, cols, levels, type);
+            // allocate memory for the image array
+            ImageType currentImage(rows, cols, levels);
+
+            // read image
+            readImage(name, currentImage);
+
+            currentFace = VectorXf(rows*cols);
+            for(int i = 0; i < rows; i++)
+            {
+                for(int j = 0; j < cols; j++)
+                {
+                    int t = 0; // Temp placeholder int to get pixel val
+                    currentImage.getPixelVal(i, j, t);
+                    currentFace[i*cols + j] = t;
+                }
+            }
+            trainingFaces.push_back(pair<string, VectorXf>(string(ent->d_name, 5), currentFace));
+        }
+        closedir (dir);
+    }
 }
 
 void writeFace(VectorXf theFace, char *fileName)
