@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
     writeFace(averageFace, "averageFace.pgm");
 
 
-    runClassifier("Results.txt", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+    runClassifier("N-Results/NData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
 
 
     // Print top 10 eigenvalues
@@ -378,6 +378,7 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
     float eigenValuesSum = eigenvalues.sum();
     float currentEigenTotal = 0;
     int count;
+    char fileName[100];
 
     for(count = 0; currentEigenTotal / eigenValuesSum < PCA_PERCENTAGE && count < eigenvalues.rows(); count++)
     {
@@ -410,14 +411,24 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
 
     int correct, incorrect; 
     correct = incorrect = 0;
+    
+    bool querySaved = false;
+
+    ofstream output;
+
+    vector<float> N_Performances(50, 0);
+
+    sprintf(fileName, "%s-%i-NImageNames.txt", resultsPath, (int)(PCA_PERCENTAGE*100));
+
+        output.open(fileName);
 
     for(unsigned int i = 0; i < queryFaces.size(); i++)
     {
-        cout << "Query Face: " << i << endl;
+        cout << "\rQuery Face: " << i << endl;
         projQueryFace = projectedQueryFaces[i].second;
         vector< pair<string, float> > queryPairs; //Pair is training image id (string) and distance (float)
 
-
+        querySaved = false;
 
         for(unsigned int t = 0; t < trainingFaces.size(); t++)
         {
@@ -425,25 +436,72 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
             queryPairs.push_back(newPair);
         }
 
-        if(amongNMostSimilarFaces(queryPairs, 50, projectedQueryFaces[i].first))
+        sort(queryPairs.begin(), queryPairs.end(), cmp);
+
+        
+
+        for(int n = 0; n < 50; n++)
         {
-            cout << "Among N most similarFaces : Yes";
-            correct++;
-        }
-        else
-        {
-            cout << "Among N most similarFaces : No";
-            incorrect++;
+            
+
+            if(amongNMostSimilarFaces(queryPairs, n+1, projectedQueryFaces[i].first))
+            {
+                N_Performances[n] += 1;
+                if(correct < 3 && !querySaved && n == 1)
+                {
+                    output << "Cor Query Img " << correct << " ID: " << queryFaces[i].first;
+                    output << " Cor Train Img " << correct << " ID: " << queryPairs[0].first;
+                    output << endl << endl;
+                    correct++;
+                    querySaved = true;
+                }
+            }
+            else
+            {
+                if(incorrect < 3 && !querySaved && n == 1)
+                {
+                    output << "Inc Query Img " << incorrect << " ID: " << queryFaces[i].first;
+                    output << " Inc Train Img " << incorrect << " ID: " << queryPairs[0].first;
+                    output << endl << endl;
+                    incorrect++;
+                    querySaved = true;
+                }
+            }
         }
 
-        cout << "\t Percentage Correct So Far = " << ((float)correct / (float)(correct + incorrect)) << endl;
+        // if(amongNMostSimilarFaces(queryPairs, 50, projectedQueryFaces[i].first))
+        // {
+        //     cout << "Among N most similarFaces : Yes";
+        //     correct++;
+        // }
+        // else
+        // {
+        //     cout << "Among N most similarFaces : No";
+        //     incorrect++;
+        // }
 
+        // cout << "\t Percentage Correct So Far = " << ((float)correct / (float)(correct + incorrect)) << endl;
     }
+
+    output.close();
+
+    sprintf(fileName, "%s-%i.txt", resultsPath, (int)(PCA_PERCENTAGE*100));
+
+    output.open(fileName);
+
+    for(int n = 0; n < 50; n++)
+    {
+        output << n+1 << "\t" << (N_Performances[n] / (float)queryFaces.size()) << endl;
+    }
+
+    output.close();
+
+
 }
     
 bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, string searchID)
 {
-    sort(similarFaces.begin(), similarFaces.end(), cmp);
+    // sort(similarFaces.begin(), similarFaces.end(), cmp);
     for(int i = 0; i < N; i++)
     {
         if(similarFaces[i].first == searchID)
