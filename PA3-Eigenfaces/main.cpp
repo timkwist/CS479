@@ -56,7 +56,6 @@ int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
 
 /* Internal methods */
-void readInFaces(const char *path, vector<VectorXf> &faces);
 void readInFaces(const char *path, vector<pair<string, VectorXf> > &faces);
 void computeEigenFaces(vector<pair<string, VectorXf> > trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
 float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace);
@@ -156,49 +155,6 @@ int main()
 
 
 
-}
-
-void readInFaces(const char *path, vector<VectorXf> &faces)
-{
-    DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir (path)) != NULL)
-    {
-        /* print all the files and directories within directory */
-        while ((ent = readdir (dir)) != NULL)
-        {
-            if(ent->d_name[0] == '.')
-                continue;
-            bool type;
-            int rows, cols, levels;
-            VectorXf currentFace;
-            char name[50] = "";
-            strcat(name, path);
-            strcat(name, "/");
-            strcat(name, ent->d_name);
-
-            // read training images' headers
-            readImageHeader(name, rows, cols, levels, type);
-            // allocate memory for the image array
-            ImageType currentImage(rows, cols, levels);
-
-            // read image
-            readImage(name, currentImage);
-
-            currentFace = VectorXf(rows*cols);
-            for(int i = 0; i < rows; i++)
-            {
-                for(int j = 0; j < cols; j++)
-                {
-                    int t = 0; // Temp placeholder int to get pixel val
-                    currentImage.getPixelVal(i, j, t);
-                    currentFace[i*cols + j] = t;
-                }
-            }
-            faces.push_back(currentFace);
-        }
-        closedir (dir);
-    }
 }
 
 void readInFaces(const char *path, vector<pair<string, VectorXf> > &faces)
