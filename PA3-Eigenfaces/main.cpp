@@ -17,37 +17,9 @@ using namespace std;
 
 float PCA_PERCENTAGE    = .80;
 
-/* Helper Methods */
-namespace Eigen
-{
-    template<class Matrix>
-    void write_binary(const char* filename, const Matrix& matrix)
-    {
-        std::ofstream out(filename,ios::out | ios::binary | ios::trunc);
-        typename Matrix::Index rows=matrix.rows(), cols=matrix.cols();
-        out.write((char*) (&rows), sizeof(typename Matrix::Index));
-        out.write((char*) (&cols), sizeof(typename Matrix::Index));
-        out.write((char*) matrix.data(), rows*cols*sizeof(typename Matrix::Scalar) );
-        out.close();
-    }
 
-    template<class Matrix>
-    void read_binary(const char* filename, Matrix& matrix)
-    {
-        std::ifstream in(filename,ios::in | std::ios::binary);
-        typename Matrix::Index rows=0, cols=0;
-        in.read((char*) (&rows),sizeof(typename Matrix::Index));
-        in.read((char*) (&cols),sizeof(typename Matrix::Index));
-        matrix.resize(rows, cols);
-        in.read( (char *) matrix.data() , rows*cols*sizeof(typename Matrix::Scalar) );
-        in.close();
-    }
-}
 
-bool cmp(pair<string, float> a, pair<string, float> b)
-{
-    return a.second < b.second;
-}
+
 
 
 /* External methods */
@@ -55,16 +27,19 @@ int readImageHeader(char[], int&, int&, int&, bool&);
 int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
 
-/* Internal methods */
 void readInFaces(const char *path, vector<pair<string, VectorXf> > &faces);
+bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
+void writeFace(VectorXf theFace, char *fileName);
+bool fileExists(const char *filename);
+
 void computeEigenFaces(vector<pair<string, VectorXf> > trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
 float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace);
-void writeFace(VectorXf theFace, char *fileName);
-bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
-bool fileExists(const char *filename);
 VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces);
 bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, string searchID);
 void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<pair<string, VectorXf> > trainingFaces, vector<pair<string, VectorXf> > queryFaces);
+
+
+/* Internal methods */
 void normalizeEigenFaces(MatrixXf &eigenfaces);
 
 int main(int argc, char* argv[])
@@ -167,202 +142,6 @@ int main(int argc, char* argv[])
 
 }
 
-void readInFaces(const char *path, vector<pair<string, VectorXf> > &faces)
-{
-    DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir (path)) != NULL)
-    {
-        /* print all the files and directories within directory */
-        while ((ent = readdir (dir)) != NULL)
-        {
-            if(ent->d_name[0] == '.')
-                continue;
-            bool type;
-            int rows, cols, levels;
-            VectorXf currentFace;
-            char name[50] = "";
-            strcat(name, path);
-            strcat(name, "/");
-            strcat(name, ent->d_name);
-
-            // read training images' headers
-            readImageHeader(name, rows, cols, levels, type);
-            // allocate memory for the image array
-            ImageType currentImage(rows, cols, levels);
-
-            // read image
-            readImage(name, currentImage);
-
-            currentFace = VectorXf(rows*cols);
-            for(int i = 0; i < rows; i++)
-            {
-                for(int j = 0; j < cols; j++)
-                {
-                    int t = 0; // Temp placeholder int to get pixel val
-                    currentImage.getPixelVal(i, j, t);
-                    currentFace[i*cols + j] = t;
-                }
-            }
-            faces.push_back(pair<string, VectorXf>(string(ent->d_name, 5), currentFace));
-        }
-        closedir (dir);
-    }
-}
-
-void writeFace(VectorXf theFace, char *fileName)
-{
-    int rows, cols, levels;
-    bool type;
-    readImageHeader("fb_H/00001_930831_fb_a.pgm", rows, cols, levels, type);
-
-    ImageType theImage(rows, cols, levels);
-
-    float min, max, val;
-    // float mean;
-    min = theFace.minCoeff();
-    max = theFace.maxCoeff();
-    // mean = theFace.mean();
-
-    for(int i = 0; i < rows; i++)
-    {
-        for(int j = 0; j < cols; j++)
-        {
-            val = (theFace[i*cols + j] - min) / (max - min);
-            theImage.setPixelVal(i, j, val*255);
-        }
-        // cout << endl;
-    }
-
-    writeImage(fileName, theImage);
-
-}
-
-void computeEigenFaces(vector<pair<string, VectorXf> > trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path)
-{
-    char fileName[100];
-    EigenSolver<MatrixXf> solver;
-    MatrixXf A;
-    ofstream output;
-
-    MatrixXf eigenVectors;
-
-
-    averageFace = VectorXf(trainingFaces[0].second.rows());
-    averageFace.fill(0);
-    for(auto it = trainingFaces.begin(); it != trainingFaces.end(); it++)
-    {
-        averageFace += (*it).second;
-    }
-    averageFace /= trainingFaces.size();
-
-    sprintf(fileName, "%s-avg-binary.dat", path);
-
-    Eigen::write_binary(fileName, averageFace);
-
-    A = MatrixXf(averageFace.rows(), trainingFaces.size());
-    for(vector<VectorXf>::size_type i = 0; i < trainingFaces.size(); i++)
-    {
-        A.col(i) = trainingFaces[i].second - averageFace;
-    }
-    eigenVectors = MatrixXf(trainingFaces.size(), trainingFaces.size());
-    eigenVectors = A.transpose()*A;
-    solver.compute(eigenVectors, /* Compute eigenvectors = */ true);
-
-    eigenfaces = MatrixXf(averageFace.rows(), trainingFaces.size());
-
-    eigenfaces = A * solver.eigenvectors().real();
-
-    eigenvalues = VectorXf(eigenfaces.cols());
-
-    eigenvalues = solver.eigenvalues().real();
-
-    // Eigen saves eigenvectors in a strange format, so writing them to a file
-    // and then reading them back in saves them in a more "expected" format
-    sprintf(fileName, "%s-binary.dat", path);
-    Eigen::write_binary(fileName, eigenfaces);
-    Eigen::read_binary(fileName,eigenfaces);
-
-    sprintf(fileName, "%s-values-binary.dat", path);
-
-    Eigen::write_binary(fileName, eigenvalues);
-
-    // Save eigenvectors to text file as well for viewing outside program
-    sprintf(fileName, "%s-EigenVectors.txt", path);
-    output.open(fileName);
-    output << eigenfaces;
-    output.close();
-}
-
-bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path)
-{
-    char fileName[100];
-
-    sprintf(fileName, "%s-binary.dat", path);
-
-    if(fileExists(fileName))
-    {
-        Eigen::read_binary(fileName, eigenfaces);
-    }
-    else
-    {
-    	return false; 
-    }
-
-    sprintf(fileName, "%s-values-binary.dat", path);
-
-    if(fileExists(fileName))
-    {
-        Eigen::read_binary(fileName, eigenvalues);
-    }
-    else
-    {
-        return false;
-    }
-
-    sprintf(fileName, "%s-avg-binary.dat", path);
-
-    if(fileExists(fileName))
-    {
-        Eigen::read_binary(fileName, averageFace);
-    }
-    else
-    {
-    	return false;
-    }
-
-
-
-    return true;
-}
-
-float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace)
-{
-	return (originalFace - newFace).norm();
-}
-
-bool fileExists(const char *filename)
-{
-    ifstream ifile(filename);
-    return ifile;
-}
-
-
-VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces)
-{
-	vector<float> faceCoefficients;
-	VectorXf normalizedFace = newFace - averageFace;
-	VectorXf projectedFace(averageFace.rows());
-	projectedFace.fill(0);
-	for(int i = 0; i < eigenfaces.cols(); i++)
-	{
-		float a = (eigenfaces.col(i).transpose() * normalizedFace)(0,0);
-		faceCoefficients.push_back(a);
-		projectedFace += (faceCoefficients[i] * eigenfaces.col(i));
-
-	}
-    return projectedFace + averageFace;
-}
 
 void normalizeEigenFaces(MatrixXf &eigenfaces)
 {
@@ -373,142 +152,4 @@ void normalizeEigenFaces(MatrixXf &eigenfaces)
 }
 
 
-void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<pair<string, VectorXf> > trainingFaces, vector<pair<string, VectorXf> > queryFaces)
-{
-    float eigenValuesSum = eigenvalues.sum();
-    float currentEigenTotal = 0;
-    int count;
-    char fileName[100];
 
-    for(count = 0; currentEigenTotal / eigenValuesSum < PCA_PERCENTAGE && count < eigenvalues.rows(); count++)
-    {
-        currentEigenTotal += eigenvalues.row(count)(0);
-    }
-
-    cout << "Reducing Dimensionality from " << eigenfaces.cols() << " to " << count << "!" << endl;
-
-    MatrixXf reducedEigenFaces(averageFace.rows(), count);
-
-    reducedEigenFaces = eigenfaces.block(0,0,averageFace.rows(),count);
-    
-    vector<pair<string, VectorXf> > projectedTrainingFaces, projectedQueryFaces;
-
-    for(unsigned int i = 0; i < trainingFaces.size(); i++)
-    {
-        pair<string, VectorXf> temp(trainingFaces[i].first, projectOntoEigenspace(trainingFaces[i].second, averageFace, reducedEigenFaces));
-        projectedTrainingFaces.push_back(temp);
-    }
-    
-    for(unsigned int i = 0; i < queryFaces.size(); i++)
-    {
-        pair<string, VectorXf> temp(queryFaces[i].first, projectOntoEigenspace(queryFaces[i].second, averageFace, reducedEigenFaces));
-        projectedQueryFaces.push_back(temp);
-    }    
-
-    cout << "Reduced!" << endl;
-
-    VectorXf projQueryFace;
-
-    int correct, incorrect; 
-    correct = incorrect = 0;
-    
-    bool querySaved = false;
-
-    ofstream output;
-
-    vector<float> N_Performances(50, 0);
-
-    sprintf(fileName, "%s-%i-NImageNames.txt", resultsPath, (int)(PCA_PERCENTAGE*100));
-
-        output.open(fileName);
-
-    for(unsigned int i = 0; i < queryFaces.size(); i++)
-    {
-        cout << "\rQuery Face: " << i << endl;
-        projQueryFace = projectedQueryFaces[i].second;
-        vector< pair<string, float> > queryPairs; //Pair is training image id (string) and distance (float)
-
-        querySaved = false;
-
-        for(unsigned int t = 0; t < trainingFaces.size(); t++)
-        {
-            pair<string, float> newPair(trainingFaces[t].first, distanceInFaceSpace(projQueryFace, trainingFaces[t].second));
-            queryPairs.push_back(newPair);
-        }
-
-        sort(queryPairs.begin(), queryPairs.end(), cmp);
-
-        
-
-        for(int n = 0; n < 50; n++)
-        {
-            
-
-            if(amongNMostSimilarFaces(queryPairs, n+1, projectedQueryFaces[i].first))
-            {
-                N_Performances[n] += 1;
-                if(correct < 3 && !querySaved && n == 1)
-                {
-                    output << "Cor Query Img " << correct << " ID: " << queryFaces[i].first;
-                    output << " Cor Train Img " << correct << " ID: " << queryPairs[0].first;
-                    output << endl << endl;
-                    correct++;
-                    querySaved = true;
-                }
-            }
-            else
-            {
-                if(incorrect < 3 && !querySaved && n == 1)
-                {
-                    output << "Inc Query Img " << incorrect << " ID: " << queryFaces[i].first;
-                    output << " Inc Train Img " << incorrect << " ID: " << queryPairs[0].first;
-                    output << endl << endl;
-                    incorrect++;
-                    querySaved = true;
-                }
-            }
-        }
-
-        // if(amongNMostSimilarFaces(queryPairs, 50, projectedQueryFaces[i].first))
-        // {
-        //     cout << "Among N most similarFaces : Yes";
-        //     correct++;
-        // }
-        // else
-        // {
-        //     cout << "Among N most similarFaces : No";
-        //     incorrect++;
-        // }
-
-        // cout << "\t Percentage Correct So Far = " << ((float)correct / (float)(correct + incorrect)) << endl;
-    }
-
-    output.close();
-
-    sprintf(fileName, "%s-%i.txt", resultsPath, (int)(PCA_PERCENTAGE*100));
-
-    output.open(fileName);
-
-    for(int n = 0; n < 50; n++)
-    {
-        output << n+1 << "\t" << (N_Performances[n] / (float)queryFaces.size()) << endl;
-    }
-
-    output.close();
-
-
-}
-    
-bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, string searchID)
-{
-    // sort(similarFaces.begin(), similarFaces.end(), cmp);
-    for(int i = 0; i < N; i++)
-    {
-        if(similarFaces[i].first == searchID)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
