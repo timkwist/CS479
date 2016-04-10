@@ -44,6 +44,11 @@ namespace Eigen
     }
 }
 
+bool cmp(pair<string, float> a, pair<string, float> b)
+{
+    return a.second < b.second;
+}
+
 
 /* External methods */
 int readImageHeader(char[], int&, int&, int&, bool&);
@@ -51,22 +56,24 @@ int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
 
 /* Internal methods */
-vector<VectorXf> readInFaces(const char *path, vector<VectorXf> &faces);
+void readInFaces(const char *path, vector<VectorXf> &faces);
+void readInFaces(const char *path, vector<pair<string, VectorXf> > &faces);
 void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
 float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace);
 void writeFace(VectorXf theFace, char *fileName);
 bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
 bool fileExists(const char *filename);
 VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces);
+bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, string searchID);
 
-void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<VectorXf> trainingFaces, vector<VectorXf> queryFaces);
+void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<pair<string, VectorXf> > trainingFaces, vector<pair<string, VectorXf> > queryFaces);
 
 void normalizeEigenFaces(MatrixXf &eigenfaces);
 
 int main()
 {
 
-    vector<VectorXf> trainingFaces, queryFaces;
+    vector<pair<string, VectorXf> > trainingFaces, queryFaces;
     MatrixXf eigenfaces;
     VectorXf eigenvalues;
     VectorXf averageFace;
@@ -79,6 +86,7 @@ int main()
 
     readInFaces("./fa_H", trainingFaces);
     readInFaces("./fb_H", queryFaces);
+
 
     cout << "Reading in saved faces, if possible" << endl;
     if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa_H") == false) // faces haven't been computed yet
@@ -152,7 +160,7 @@ int main()
 
 }
 
-vector<VectorXf> readInFaces(const char *path, vector<VectorXf> &faces)
+void readInFaces(const char *path, vector<VectorXf> &faces)
 {
     DIR *dir;
     struct dirent *ent;
@@ -193,8 +201,49 @@ vector<VectorXf> readInFaces(const char *path, vector<VectorXf> &faces)
         }
         closedir (dir);
     }
+}
 
-    return faces;
+void readInFaces(const char *path, vector<pair<string, VectorXf> > &faces)
+{
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir (path)) != NULL)
+    {
+        /* print all the files and directories within directory */
+        while ((ent = readdir (dir)) != NULL)
+        {
+            if(ent->d_name[0] == '.')
+                continue;
+            bool type;
+            int rows, cols, levels;
+            VectorXf currentFace;
+            char name[50] = "";
+            strcat(name, path);
+            strcat(name, "/");
+            strcat(name, ent->d_name);
+
+            // read training images' headers
+            readImageHeader(name, rows, cols, levels, type);
+            // allocate memory for the image array
+            ImageType currentImage(rows, cols, levels);
+
+            // read image
+            readImage(name, currentImage);
+
+            currentFace = VectorXf(rows*cols);
+            for(int i = 0; i < rows; i++)
+            {
+                for(int j = 0; j < cols; j++)
+                {
+                    int t = 0; // Temp placeholder int to get pixel val
+                    currentImage.getPixelVal(i, j, t);
+                    currentFace[i*cols + j] = t;
+                }
+            }
+            faces.push_back(pair<string, VectorXf>(string(ent->d_name, 5), currentFace));
+        }
+        closedir (dir);
+    }
 }
 
 void writeFace(VectorXf theFace, char *fileName)
@@ -360,7 +409,8 @@ void normalizeEigenFaces(MatrixXf &eigenfaces)
     }
 }
 
-void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<VectorXf> trainingFaces, vector<VectorXf> queryFaces)
+
+void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<pair<string, VectorXf> > trainingFaces, vector<pair<string, VectorXf> > queryFaces)
 {
     float eigenValuesSum = eigenvalues.sum();
     float currentEigenTotal = 0;
@@ -377,43 +427,55 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
 
     reducedEigenFaces = eigenfaces.block(0,0,averageFace.rows(),count);
     
-    vector<VectorXf> projectedTrainingFaces, projectedQueryFaces;
+    vector<pair<string, VectorXf> > projectedTrainingFaces, projectedQueryFaces;
 
     for(unsigned int i = 0; i < trainingFaces.size(); i++)
     {
-        trainingFaces[i].normalize();
-        projectedTrainingFaces.push_back(projectOntoEigenspace(trainingFaces[i], averageFace, reducedEigenFaces));
+        trainingFaces[i].second.normalize();
+        pair<string, VectorXf> temp(trainingFaces[i].first, projectOntoEigenspace(trainingFaces[i].second, averageFace, reducedEigenFaces));
+        projectedTrainingFaces.push_back(temp);
     }
     
     for(unsigned int i = 0; i < queryFaces.size(); i++)
     {
-        queryFaces[i].normalize();
-        projectedQueryFaces.push_back(projectOntoEigenspace(queryFaces[i], averageFace, reducedEigenFaces));
+        queryFaces[i].second.normalize();
+        pair<string, VectorXf> temp(queryFaces[i].first, projectOntoEigenspace(queryFaces[i].second, averageFace, reducedEigenFaces));
+        projectedQueryFaces.push_back(temp);
     }    
 
     cout << "Reduced!" << endl;
 
     VectorXf projQueryFace;
 
-    vector< pair<int, float> > queryPairs; //Pair is training image index (int) and distance (float)
+    
 
     for(unsigned int i = 0; i < queryFaces.size(); i++)
     {
         cout << "Query Face: " << i << endl;
-        projQueryFace = projectedQueryFaces[i];
+        projQueryFace = projectedQueryFaces[i].second;
+        vector< pair<string, float> > queryPairs; //Pair is training image id (string) and distance (float)
 
         for(unsigned int t = 0; t < trainingFaces.size(); t++)
         {
-            pair<int, float> newPair(t, distanceInFaceSpace(projQueryFace, trainingFaces[t]));
-
-            if(newPair.second < 1)
-                cout << newPair.first << "  " << newPair.second << endl;
-
+            pair<string, float> newPair(trainingFaces[t].first, distanceInFaceSpace(projQueryFace, trainingFaces[t].second));
             queryPairs.push_back(newPair);
+        }
+
+        cout << "Among N most similarFaces : " << ((amongNMostSimilarFaces(queryPairs, 50, projectedQueryFaces[i].first)) ? "Yes" : "No") << endl;
+
+    }
+}
+
+bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, string searchID)
+{
+    sort(similarFaces.begin(), similarFaces.end(), cmp);
+    for(int i = 0; i < N; i++)
+    {
+        if(similarFaces[i].first == searchID)
+        {
+            return true;
         }
     }
 
-
-
-    
+    return false;
 }
