@@ -14,6 +14,9 @@ using namespace std;
 
 #include "image.h"
 
+
+const float PCA_PERCENTAGE = .80;
+
 /* Helper Methods */
 namespace Eigen
 {
@@ -48,7 +51,7 @@ int readImage(char[], ImageType&);
 int writeImage(char[], ImageType&);
 
 /* Internal methods */
-vector<VectorXf> readInTrainingFaces(const char *path, vector<VectorXf> &trainingFaces);
+vector<VectorXf> readInFaces(const char *path, vector<VectorXf> &faces);
 void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
 float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace);
 void writeFace(VectorXf theFace, char *fileName);
@@ -56,12 +59,14 @@ bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigen
 bool fileExists(const char *filename);
 VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces);
 
+void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<VectorXf> trainingFaces, vector<VectorXf> queryFaces);
+
 void normalizeEigenFaces(MatrixXf &eigenfaces);
 
 int main()
 {
 
-    vector<VectorXf> trainingFaces;
+    vector<VectorXf> trainingFaces, queryFaces;
     MatrixXf eigenfaces;
     VectorXf eigenvalues;
     VectorXf averageFace;
@@ -72,7 +77,8 @@ int main()
     // Compute Average Face and Eigenfaces and Eigenvalues
     //================================================
 
-    readInTrainingFaces("./fa_H", trainingFaces);
+    readInFaces("./fa_H", trainingFaces);
+    readInFaces("./fb_H", queryFaces);
 
     cout << "Reading in saved faces, if possible" << endl;
     if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa_H") == false) // faces haven't been computed yet
@@ -88,26 +94,29 @@ int main()
     writeFace(averageFace, "averageFace.pgm");
 
 
-    // Print top 10 eigenvalues
-    char faceFileName[100];
-    for(int i = 0; i < 10; i++)
-    {
-        sprintf(faceFileName, "largestFace%i.pgm", i + 1);
-        writeFace(eigenfaces.col(i), faceFileName);
-    }
+    runClassifier("Results.txt", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+
 
     // Print top 10 eigenvalues
-    for(int i = eigenfaces.cols() - 1; i > eigenfaces.cols() - 1 - 10; i--)
-    {
-        sprintf(faceFileName, "smallestFace%i.pgm", i - eigenfaces.cols() + 2);
-        writeFace(eigenfaces.col(i), faceFileName);
-    }
+    // char faceFileName[100];
+    // for(int i = 0; i < 10; i++)
+    // {
+    //     sprintf(faceFileName, "largestFace%i.pgm", i + 1);
+    //     writeFace(eigenfaces.col(i), faceFileName);
+    // }
 
-    vector<VectorXf> newFaces;
+    // // Print top 10 eigenvalues
+    // for(int i = eigenfaces.cols() - 1; i > eigenfaces.cols() - 1 - 10; i--)
+    // {
+    //     sprintf(faceFileName, "smallestFace%i.pgm", i - eigenfaces.cols() + 2);
+    //     writeFace(eigenfaces.col(i), faceFileName);
+    // }
 
-    newFaces.push_back(projectOntoEigenspace(trainingFaces[152], averageFace, eigenfaces));
+    // vector<VectorXf> newFaces;
 
-    writeFace(newFaces[0], "testing.pgm");
+    // newFaces.push_back(projectOntoEigenspace(trainingFaces[152], averageFace, eigenfaces));
+
+    // writeFace(newFaces[0], "testing.pgm");
 
     //================================================
     // Interactive: Decide how many faces to keep
@@ -143,7 +152,7 @@ int main()
 
 }
 
-vector<VectorXf> readInTrainingFaces(const char *path, vector<VectorXf> &trainingFaces)
+vector<VectorXf> readInFaces(const char *path, vector<VectorXf> &faces)
 {
     DIR *dir;
     struct dirent *ent;
@@ -180,12 +189,12 @@ vector<VectorXf> readInTrainingFaces(const char *path, vector<VectorXf> &trainin
                     currentFace[i*cols + j] = t;
                 }
             }
-            trainingFaces.push_back(currentFace);
+            faces.push_back(currentFace);
         }
         closedir (dir);
     }
 
-    return trainingFaces;
+    return faces;
 }
 
 void writeFace(VectorXf theFace, char *fileName)
@@ -349,4 +358,62 @@ void normalizeEigenFaces(MatrixXf &eigenfaces)
     {
         eigenfaces.col(i).normalize();  
     }
+}
+
+void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<VectorXf> trainingFaces, vector<VectorXf> queryFaces)
+{
+    float eigenValuesSum = eigenvalues.sum();
+    float currentEigenTotal = 0;
+    int count;
+
+    for(count = 0; currentEigenTotal / eigenValuesSum < PCA_PERCENTAGE && count < eigenvalues.rows(); count++)
+    {
+        currentEigenTotal += eigenvalues.row(count)(0);
+    }
+
+    cout << "Reducing Dimensionality from " << eigenfaces.cols() << " to " << count << "!" << endl;
+
+    MatrixXf reducedEigenFaces(averageFace.rows(), count);
+
+    reducedEigenFaces = eigenfaces.block(0,0,averageFace.rows(),count);
+    
+    vector<VectorXf> projectedTrainingFaces, projectedQueryFaces;
+
+    for(unsigned int i = 0; i < trainingFaces.size(); i++)
+    {
+        trainingFaces[i].normalize();
+        projectedTrainingFaces.push_back(projectOntoEigenspace(trainingFaces[i], averageFace, reducedEigenFaces));
+    }
+    
+    for(unsigned int i = 0; i < queryFaces.size(); i++)
+    {
+        queryFaces[i].normalize();
+        projectedQueryFaces.push_back(projectOntoEigenspace(queryFaces[i], averageFace, reducedEigenFaces));
+    }    
+
+    cout << "Reduced!" << endl;
+
+    VectorXf projQueryFace;
+
+    vector< pair<int, float> > queryPairs; //Pair is training image index (int) and distance (float)
+
+    for(unsigned int i = 0; i < queryFaces.size(); i++)
+    {
+        cout << "Query Face: " << i << endl;
+        projQueryFace = projectedQueryFaces[i];
+
+        for(unsigned int t = 0; t < trainingFaces.size(); t++)
+        {
+            pair<int, float> newPair(t, distanceInFaceSpace(projQueryFace, trainingFaces[t]));
+
+            if(newPair.second < 1)
+                cout << newPair.first << "  " << newPair.second << endl;
+
+            queryPairs.push_back(newPair);
+        }
+    }
+
+
+
+    
 }
