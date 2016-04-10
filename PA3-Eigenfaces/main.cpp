@@ -15,7 +15,7 @@ using namespace std;
 #include "image.h"
 
 
-const float PCA_PERCENTAGE = .80;
+float PCA_PERCENTAGE    = .80;
 
 /* Helper Methods */
 namespace Eigen
@@ -67,13 +67,23 @@ bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, st
 void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<pair<string, VectorXf> > trainingFaces, vector<pair<string, VectorXf> > queryFaces);
 void normalizeEigenFaces(MatrixXf &eigenfaces);
 
-int main()
+int main(int argc, char* argv[])
 {
 
     vector<pair<string, VectorXf> > trainingFaces, queryFaces;
     MatrixXf eigenfaces;
     VectorXf eigenvalues;
     VectorXf averageFace;
+
+    if(argc < 2)
+    {
+        cout << "Improper Usage! Needs one argument for Percentage";
+        return 1;
+    }
+
+    PCA_PERCENTAGE = atof(argv[1]);
+
+
     /**
      * TRAINING MODE
      */
@@ -344,7 +354,6 @@ VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf 
 	VectorXf normalizedFace = newFace - averageFace;
 	VectorXf projectedFace(averageFace.rows());
 	projectedFace.fill(0);
-    normalizedFace.normalize();
 	for(int i = 0; i < eigenfaces.cols(); i++)
 	{
 		float a = (eigenfaces.col(i).transpose() * normalizedFace)(0,0);
@@ -352,7 +361,7 @@ VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf 
 		projectedFace += (faceCoefficients[i] * eigenfaces.col(i));
 
 	}
-    return projectedFace;
+    return projectedFace + averageFace;
 }
 
 void normalizeEigenFaces(MatrixXf &eigenfaces)
@@ -385,14 +394,12 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
 
     for(unsigned int i = 0; i < trainingFaces.size(); i++)
     {
-        trainingFaces[i].second.normalize();
         pair<string, VectorXf> temp(trainingFaces[i].first, projectOntoEigenspace(trainingFaces[i].second, averageFace, reducedEigenFaces));
         projectedTrainingFaces.push_back(temp);
     }
     
     for(unsigned int i = 0; i < queryFaces.size(); i++)
     {
-        queryFaces[i].second.normalize();
         pair<string, VectorXf> temp(queryFaces[i].first, projectOntoEigenspace(queryFaces[i].second, averageFace, reducedEigenFaces));
         projectedQueryFaces.push_back(temp);
     }    
@@ -401,7 +408,8 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
 
     VectorXf projQueryFace;
 
-    
+    int correct, incorrect; 
+    correct = incorrect = 0;
 
     for(unsigned int i = 0; i < queryFaces.size(); i++)
     {
@@ -409,17 +417,30 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
         projQueryFace = projectedQueryFaces[i].second;
         vector< pair<string, float> > queryPairs; //Pair is training image id (string) and distance (float)
 
+
+
         for(unsigned int t = 0; t < trainingFaces.size(); t++)
         {
             pair<string, float> newPair(trainingFaces[t].first, distanceInFaceSpace(projQueryFace, trainingFaces[t].second));
             queryPairs.push_back(newPair);
         }
 
-        cout << "Among N most similarFaces : " << ((amongNMostSimilarFaces(queryPairs, 50, projectedQueryFaces[i].first)) ? "Yes" : "No") << endl;
+        if(amongNMostSimilarFaces(queryPairs, 50, projectedQueryFaces[i].first))
+        {
+            cout << "Among N most similarFaces : Yes";
+            correct++;
+        }
+        else
+        {
+            cout << "Among N most similarFaces : No";
+            incorrect++;
+        }
+
+        cout << "\t Percentage Correct So Far = " << ((float)correct / (float)(correct + incorrect)) << endl;
 
     }
 }
-
+    
 bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, string searchID)
 {
     sort(similarFaces.begin(), similarFaces.end(), cmp);
