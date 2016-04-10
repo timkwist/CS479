@@ -58,16 +58,14 @@ int writeImage(char[], ImageType&);
 /* Internal methods */
 void readInFaces(const char *path, vector<VectorXf> &faces);
 void readInFaces(const char *path, vector<pair<string, VectorXf> > &faces);
-void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
+void computeEigenFaces(vector<pair<string, VectorXf> > trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
 float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace);
 void writeFace(VectorXf theFace, char *fileName);
 bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
 bool fileExists(const char *filename);
 VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces);
 bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, string searchID);
-
 void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<pair<string, VectorXf> > trainingFaces, vector<pair<string, VectorXf> > queryFaces);
-
 void normalizeEigenFaces(MatrixXf &eigenfaces);
 
 int main()
@@ -274,7 +272,7 @@ void writeFace(VectorXf theFace, char *fileName)
 
 }
 
-void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path)
+void computeEigenFaces(vector<pair<string, VectorXf> > trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path)
 {
     char fileName[100];
     EigenSolver<MatrixXf> solver;
@@ -284,11 +282,11 @@ void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, Ma
     MatrixXf eigenVectors;
 
 
-    averageFace = VectorXf(trainingFaces[0].rows());
+    averageFace = VectorXf(trainingFaces[0].second.rows());
     averageFace.fill(0);
     for(auto it = trainingFaces.begin(); it != trainingFaces.end(); it++)
     {
-        averageFace += (*it);
+        averageFace += (*it).second;
     }
     averageFace /= trainingFaces.size();
 
@@ -299,7 +297,7 @@ void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, Ma
     A = MatrixXf(averageFace.rows(), trainingFaces.size());
     for(vector<VectorXf>::size_type i = 0; i < trainingFaces.size(); i++)
     {
-        A.col(i) = trainingFaces[i] - averageFace;
+        A.col(i) = trainingFaces[i].second - averageFace;
     }
     eigenVectors = MatrixXf(trainingFaces.size(), trainingFaces.size());
     eigenVectors = A.transpose()*A;
