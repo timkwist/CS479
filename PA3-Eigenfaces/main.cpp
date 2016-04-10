@@ -86,13 +86,30 @@ int main()
     cout << "face 0 norm = " << eigenfaces.col(0).norm() << endl;
 
 
-    VectorXf newFace(averageFace.rows());
+    vector<VectorXf> newFaces;
 
-    newFace = projectOntoEigenspace(trainingFaces[0], averageFace, eigenfaces);
+    float minError = 10000;
+    float maxError = 0;
+    float newError = 0;
+    for(auto it = trainingFaces.begin(); it != trainingFaces.end(); it++)
+    {
+        (*it).normalize();
+        newFaces.push_back(projectOntoEigenspace(*it, averageFace, eigenfaces));
+        newError = distanceInFaceSpace(*it, newFaces.back());
+        cout << newError << endl;
+        if(newError < minError)
+        {
+            minError = newError;
+        }
+        if(newError > maxError)
+        {
+            maxError = newError;
+        }
+    }
 
-    writeFace(newFace, "newFace.pgm");
 
-    cout << distanceInFaceSpace(trainingFaces[0], newFace) << endl;
+
+    cout << minError << " " << maxError << endl;
 
 
     //================================================
@@ -295,9 +312,9 @@ VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf 
 {
 	vector<float> faceCoefficients;
 	VectorXf normalizedFace = newFace - averageFace;
-	RowVectorXf transposedFace = normalizedFace.transpose();
 	VectorXf projectedFace(averageFace.rows());
 	projectedFace.fill(0);
+    normalizedFace.normalize();
 	for(int i = 0; i < eigenfaces.cols(); i++)
 	{
 		float a = (eigenfaces.col(i).transpose() * normalizedFace)(0,0);
@@ -305,7 +322,6 @@ VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf 
 		projectedFace += (faceCoefficients[i] * eigenfaces.col(i));
 
 	}
-
     return projectedFace;
 }
 
