@@ -70,46 +70,32 @@ int main()
     //================================================
     // Compute Average Face and Eigenfaces
     //================================================
+    readInTrainingFaces("./fa_H", trainingFaces);
     cout << "Reading in saved faces, if possible" << endl;
-    if(readSavedFaces(averageFace, eigenfaces, "fb_H") == false) // faces haven't been computed yet
+    if(readSavedFaces(averageFace, eigenfaces, "fa_H") == false) // faces haven't been computed yet
     {
     	cout << "No saved faces available, computing faces instead" << endl;
-        
-    	computeEigenFaces(trainingFaces, averageFace, eigenfaces, "fb_H");
+    	computeEigenFaces(trainingFaces, averageFace, eigenfaces, "fa_H");
     }
-
-    readInTrainingFaces("./fb_H", trainingFaces);
-
-
     normalizeEigenFaces(eigenfaces);
 
-    cout << "face 0 norm = " << eigenfaces.col(0).norm() << endl;
+    // Print average face
+    writeFace(averageFace, "averageFace.pgm");
 
-
-    vector<VectorXf> newFaces;
-
-    float minError = 10000;
-    float maxError = 0;
-    float newError = 0;
-    for(auto it = trainingFaces.begin(); it != trainingFaces.end(); it++)
+    // Print top 10 eigenvalues
+    char faceFileName[100];
+    for(int i = 0; i < 10; i++)
     {
-        (*it).normalize();
-        newFaces.push_back(projectOntoEigenspace(*it, averageFace, eigenfaces));
-        newError = distanceInFaceSpace(*it, newFaces.back());
-        cout << newError << endl;
-        if(newError < minError)
-        {
-            minError = newError;
-        }
-        if(newError > maxError)
-        {
-            maxError = newError;
-        }
+        sprintf(faceFileName, "largestFace%i.pgm", i + 1);
+        writeFace(eigenfaces.col(i), faceFileName);
     }
 
-
-
-    cout << minError << " " << maxError << endl;
+    // Print top 10 eigenvalues
+    for(int i = eigenfaces.cols() - 1; i > eigenfaces.cols() - 1 - 10; i--)
+    {
+        sprintf(faceFileName, "smallestFace%i.pgm", i - eigenfaces.cols() + 2);
+        writeFace(eigenfaces.col(i), faceFileName);
+    }
 
 
     //================================================
