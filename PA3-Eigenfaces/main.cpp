@@ -49,10 +49,10 @@ int writeImage(char[], ImageType&);
 
 /* Internal methods */
 vector<VectorXf> readInTrainingFaces(const char *path, vector<VectorXf> &trainingFaces);
-void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
+void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
 float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace);
 void writeFace(VectorXf theFace, char *fileName);
-bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *path);
+bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
 bool fileExists(const char *filename);
 VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces);
 
@@ -63,24 +63,30 @@ int main()
 
     vector<VectorXf> trainingFaces;
     MatrixXf eigenfaces;
+    VectorXf eigenvalues;
     VectorXf averageFace;
     /**
      * TRAINING MODE
      */
     //================================================
-    // Compute Average Face and Eigenfaces
+    // Compute Average Face and Eigenfaces and Eigenvalues
     //================================================
+
     readInTrainingFaces("./fa_H", trainingFaces);
+
     cout << "Reading in saved faces, if possible" << endl;
-    if(readSavedFaces(averageFace, eigenfaces, "fa_H") == false) // faces haven't been computed yet
+    if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa_H") == false) // faces haven't been computed yet
     {
     	cout << "No saved faces available, computing faces instead" << endl;
-    	computeEigenFaces(trainingFaces, averageFace, eigenfaces, "fa_H");
+        
+    	computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa_H");
     }
+
     normalizeEigenFaces(eigenfaces);
 
     // Print average face
     writeFace(averageFace, "averageFace.pgm");
+
 
     // Print top 10 eigenvalues
     char faceFileName[100];
@@ -97,6 +103,11 @@ int main()
         writeFace(eigenfaces.col(i), faceFileName);
     }
 
+    vector<VectorXf> newFaces;
+
+    newFaces.push_back(projectOntoEigenspace(trainingFaces[152], averageFace, eigenfaces));
+
+    writeFace(newFaces[0], "testing.pgm");
 
     //================================================
     // Interactive: Decide how many faces to keep
@@ -205,7 +216,7 @@ void writeFace(VectorXf theFace, char *fileName)
 
 }
 
-void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, const char *path)
+void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path)
 {
     char fileName[100];
     EigenSolver<MatrixXf> solver;
@@ -240,11 +251,19 @@ void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, Ma
 
     eigenfaces = A * solver.eigenvectors().real();
 
+    eigenvalues = VectorXf(eigenfaces.cols());
+
+    eigenvalues = solver.eigenvalues().real();
+
     // Eigen saves eigenvectors in a strange format, so writing them to a file
     // and then reading them back in saves them in a more "expected" format
     sprintf(fileName, "%s-binary.dat", path);
     Eigen::write_binary(fileName, eigenfaces);
     Eigen::read_binary(fileName,eigenfaces);
+
+    sprintf(fileName, "%s-values-binary.dat", path);
+
+    Eigen::write_binary(fileName, eigenvalues);
 
     // Save eigenvectors to text file as well for viewing outside program
     sprintf(fileName, "%s-EigenVectors.txt", path);
@@ -253,7 +272,7 @@ void computeEigenFaces(vector<VectorXf> trainingFaces, VectorXf &averageFace, Ma
     output.close();
 }
 
-bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *path)
+bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path)
 {
     char fileName[100];
 
@@ -268,6 +287,17 @@ bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *pat
     	return false; 
     }
 
+    sprintf(fileName, "%s-values-binary.dat", path);
+
+    if(fileExists(fileName))
+    {
+        Eigen::read_binary(fileName, eigenvalues);
+    }
+    else
+    {
+        return false;
+    }
+
     sprintf(fileName, "%s-avg-binary.dat", path);
 
     if(fileExists(fileName))
@@ -278,6 +308,8 @@ bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, const char *pat
     {
     	return false;
     }
+
+
 
     return true;
 }
