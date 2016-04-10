@@ -41,6 +41,11 @@ namespace Eigen
     }
 }
 
+bool cmp(pair<string, float> a, pair<string, float> b)
+{
+    return a.second < b.second;
+}
+
 
 /* External methods */
 int readImageHeader(char[], int&, int&, int&, bool&);
@@ -56,6 +61,7 @@ void writeFace(VectorXf theFace, char *fileName);
 bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path);
 bool fileExists(const char *filename);
 VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces);
+bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, string searchID);
 
 void normalizeEigenFaces(MatrixXf &eigenfaces);
 
@@ -391,4 +397,18 @@ void normalizeEigenFaces(MatrixXf &eigenfaces)
     {
         eigenfaces.col(i).normalize();  
     }
+}
+
+bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, string searchID)
+{
+    sort(similarFaces.begin(), similarFaces.end(), cmp);
+    for(int i = 0; i < N; i++)
+    {
+        if(similarFaces[i].first == searchID)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
