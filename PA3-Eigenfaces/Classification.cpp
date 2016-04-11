@@ -115,13 +115,12 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
 
         for(unsigned int t = 0; t < trainingFaces.size(); t++)
         {
-            pair<string, float> newPair(trainingFaces[t].first, distanceInFaceSpace(projQueryFace, trainingFaces[t].second));
+            pair<string, float> newPair(trainingFaces[t].first, distanceInFaceSpace(projQueryFace, projectedTrainingFaces[t].second));
             queryPairs.push_back(newPair);
         }
 
         sort(queryPairs.begin(), queryPairs.end(), cmp);
 
-        
 
         for(int n = 0; n < 50; n++)
         {
@@ -182,4 +181,118 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
 
 }
 
+void classifierThreshold(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<pair<string, VectorXf> > trainingFaces, vector<pair<string, VectorXf> > queryFaces)
+{
+    float eigenValuesSum = eigenvalues.sum();
+    float currentEigenTotal = 0;
+    int count;
+    char fileName[100];
+
+    for(count = 0; currentEigenTotal / eigenValuesSum < PCA_PERCENTAGE && count < eigenvalues.rows(); count++)
+    {
+        currentEigenTotal += eigenvalues.row(count)(0);
+    }
+
+    cout << "Reducing Dimensionality from " << eigenfaces.cols() << " to " << count << "!" << endl;
+
+    MatrixXf reducedEigenFaces(averageFace.rows(), count);
+
+    reducedEigenFaces = eigenfaces.block(0,0,averageFace.rows(),count);
+    
+    vector<pair<string, VectorXf> > projectedTrainingFaces, projectedQueryFaces;
+
+    // for(unsigned int i = 0; i < trainingFaces.size(); i++)
+    // {
+    //     pair<string, VectorXf> temp(trainingFaces[i].first, projectOntoEigenspace(trainingFaces[i].second, averageFace, reducedEigenFaces));
+    //     projectedTrainingFaces.push_back(temp);
+    // }
+    
+    for(unsigned int i = 0; i < queryFaces.size(); i++)
+    {
+        pair<string, VectorXf> temp(queryFaces[i].first, projectOntoEigenspace(queryFaces[i].second, averageFace, reducedEigenFaces));
+        projectedQueryFaces.push_back(temp);
+    }    
+
+    cout << "Reduced!" << endl;
+
+    VectorXf projQueryFace;
+    int TPCount, FPCount;
+    TPCount = FPCount = 0;
+
+    pair<int, int> temp(0,0);
+
+    vector< pair<int, int> > counts(1800, temp); //first = TP count & second = FP count
+
+    for(unsigned int i = 0; i < projectedQueryFaces.size(); i++)
+    {
+        cout << "\rQuery Face: " << i;
+        projQueryFace = projectedQueryFaces[i].second;
+        vector< pair<string, float> > queryPairs; //Pair is training image id (string) and distance (float)
+
+        for(unsigned int t = 0; t < trainingFaces.size(); t++)
+        {
+            pair<string, float> newPair(trainingFaces[t].first, distanceInFaceSpace(projQueryFace, trainingFaces[t].second));
+            queryPairs.push_back(newPair);
+        }
+
+        sort(queryPairs.begin(), queryPairs.end(), cmp);
+        cout << "\t" << queryPairs[0].second << endl;
+
+
+
+        for(int threshold = 510; threshold < 615; threshold+=1)
+        {
+            //Our best match (from the allowed subjects) is less than the threshold 
+            //So we have a positive result
+
+            if(queryPairs[0].second <= threshold)
+            {
+                //Check if its true positive or false positive
+                if(atoi(projectedQueryFaces[i].first.c_str()) <= 93)
+                {
+                    //True positive - We have a query face that is in the training sample (Non-intruder allowed access)
+                    counts[threshold].first++;
+                }
+                else
+                {
+                    //False positive - We have a query face that is NOT in the training sample (Intruder)
+                    counts[threshold].second++;
+                }
+            }
+            else
+            {
+                //Check if its false negative or true negative
+                // if(atoi(projectedQueryFaces[i].first.c_str()) <= 93)
+                // {
+                //     //False negative - We have a query face that is in the training sample (Non-intruder denied acccess)
+                // }
+                // else
+                // {
+                //     //True negative - We have a query face that is NOT in the training sample (Intruder denied access)
+                // }
+            }
+        }
+
+    }
+
+    sprintf(fileName, "%s-%i.txt", resultsPath, (int)(PCA_PERCENTAGE*100));
+    ofstream output;
+
+    output.open(fileName);
+
+    //50 non intruders and 817 intruders
+
+    for(int threshold = 510; threshold < 615; threshold+=1)
+    {
+        float TPRate = counts[threshold].first / (float)trainingFaces.size();
+        float FPRate = counts[threshold].second / (float)(queryFaces.size() - trainingFaces.size());
+
+        output << threshold << "\t" << TPRate<< "\t" << FPRate << endl;
+    }
+
+    output.close();
+
+    //Check each query face against the training set, if any comparisons are below the threshold then they are allowed in
+
+}
     

@@ -18,10 +18,6 @@ using namespace std;
 float PCA_PERCENTAGE    = .80;
 
 
-
-
-
-
 /* External methods */
 int readImageHeader(char[], int&, int&, int&, bool&);
 int readImage(char[], ImageType&);
@@ -36,7 +32,9 @@ void computeEigenFaces(vector<pair<string, VectorXf> > trainingFaces, VectorXf &
 float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace);
 VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces);
 bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, string searchID);
+
 void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<pair<string, VectorXf> > trainingFaces, vector<pair<string, VectorXf> > queryFaces);
+void classifierThreshold(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<pair<string, VectorXf> > trainingFaces, vector<pair<string, VectorXf> > queryFaces);
 
 
 /* Internal methods */
@@ -52,7 +50,7 @@ int main(int argc, char* argv[])
 
     if(argc < 2)
     {
-        cout << "Improper Usage! Needs one argument for Percentage";
+        cout << "Improper Usage! Needs one argument for Percentage \n";
         return 1;
     }
 
@@ -66,25 +64,25 @@ int main(int argc, char* argv[])
     // Compute Average Face and Eigenfaces and Eigenvalues
     //================================================
 
-    readInFaces("./fa_H", trainingFaces);
-    readInFaces("./fb_H", queryFaces);
+    // readInFaces("./fa_H", trainingFaces);
+    // readInFaces("./fb_H", queryFaces);
 
 
-    cout << "Reading in saved faces, if possible" << endl;
-    if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa_H") == false) // faces haven't been computed yet
-    {
-    	cout << "No saved faces available, computing faces instead" << endl;
+    // cout << "Reading in saved faces, if possible" << endl;
+    // if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa_H") == false) // faces haven't been computed yet
+    // {
+    // 	cout << "No saved faces available, computing faces instead" << endl;
         
-    	computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa_H");
-    }
+    // 	computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa_H");
+    // }
 
-    normalizeEigenFaces(eigenfaces);
+    // normalizeEigenFaces(eigenfaces);
 
-    // Print average face
-    writeFace(averageFace, "averageFace.pgm");
+    // // Print average face
+    // writeFace(averageFace, "averageFace.pgm");
 
 
-    runClassifier("N-Results/NData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+    // runClassifier("N-Results/NData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
 
 
     // Print top 10 eigenvalues
@@ -102,11 +100,30 @@ int main(int argc, char* argv[])
     //     writeFace(eigenfaces.col(i), faceFileName);
     // }
 
-    // vector<VectorXf> newFaces;
+    // trainingFaces.clear();
+    // queryFaces.clear();
 
-    // newFaces.push_back(projectOntoEigenspace(trainingFaces[152], averageFace, eigenfaces));
+    readInFaces("./fa2_H", trainingFaces);
+    readInFaces("./fa_H", queryFaces);
 
-    // writeFace(newFaces[0], "testing.pgm");
+    cout << "Reading in saved faces for part b, if possible" << endl;
+    if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa2_H") == false) // faces haven't been computed yet
+    {
+        cout << "No saved faces available, computing faces instead" << endl;
+        
+        computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa2_H");
+    }
+
+    normalizeEigenFaces(eigenfaces);
+
+    writeFace(averageFace, "averageFace-PartB.pgm");
+
+    PCA_PERCENTAGE = .95;
+
+    classifierThreshold("C-Results/CData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+
+
+/*
 
     //================================================
     // Interactive: Decide how many faces to keep
