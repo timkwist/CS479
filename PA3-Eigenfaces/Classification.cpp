@@ -16,16 +16,44 @@ using namespace std;
 
 extern float PCA_PERCENTAGE;
 
+/**
+ * Comparison operator for pair of string / float
+ * Returns true if the float in a is less than float in b
+ * Returns false otherwise
+ * 
+ * @param  a Pair consisting of string and float
+ * @param  b Pair consisting of string and float
+ * @return   True if the float in a is less than the float in b; false otherwise
+ */
 bool cmp(pair<string, float> a, pair<string, float> b)
 {
     return a.second < b.second;
 }
 
+/**
+ * Returns the distance in face space,
+ * defined as the norm of the original face subtracted by
+ * the new face.
+ * 
+ * @param  originalFace Face before projection (or face already in face space)
+ * @param  newFace      Unclassified face after it has been projected
+ * @return              The distance in face space
+ */
 float distanceInFaceSpace(VectorXf originalFace, VectorXf newFace)
 {
     return (originalFace - newFace).norm();
 }
 
+/**
+ * Searches through the top N most similar faces (which are the N smallest distances in face space)
+ * Returns true if one of those faces has the same ID as the search ID
+ * 
+ * @param  similarFaces Vector of faces, with the string defining the face's ID and the float defining
+ *                      the distance in face space
+ * @param  N            Number of faces to search through
+ * @param  searchID     Desired ID that is being searched for
+ * @return              True if the desired ID matches one of the N most similar faces; false otherwise
+ */
 bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, string searchID)
 {
     // sort(similarFaces.begin(), similarFaces.end(), cmp);
@@ -40,6 +68,16 @@ bool amongNMostSimilarFaces(vector<pair<string, float> > similarFaces, int N, st
     return false;
 }
 
+/**
+ * Calculates the projection of the new face onto the previously defined face space
+ * 
+ * @param  newFace     The unclassified face that will be projected
+ * @param  averageFace The average face of the face space
+ * @param  eigenfaces  The top K eigenfaces(eigenvectors) that make up / represent the face space
+ * @return             Vector of size equivalent to newFace and averageFace that represents the
+ *                            new face projected onto the eigenspace defined by the average face
+ *                            and eigenfaces
+ */
 VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf eigenfaces)
 {
     vector<float> faceCoefficients;
