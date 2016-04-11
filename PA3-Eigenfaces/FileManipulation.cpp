@@ -46,13 +46,36 @@ namespace Eigen
     }
 }
 
+/**
+ * Returns whether or not the given file exists (IE, can be opened/read)
+ * 
+ * @param  filename Name of file that is desired to be opened
+ * @return          True if the file does exists, false otherwise.
+ */
 bool fileExists(const char *filename)
 {
     ifstream ifile(filename);
     return ifile;
 }
 
-
+/**
+ * Checks if the averageface, eigenfaces, and eigenvalues for the given path
+ * exist.
+ * If they do exist, reads them in and returns them via the reference parameters.
+ *
+ * NOTE: Reads files in the order of
+ * - Eigenfaces
+ * - Eigenvalues
+ * - Average face
+ * Will attempt to read each of these in individually in their given order
+ * (IE, only checks if a given file exists after previous files have been read in)
+ * 
+ * @param  averageFace Empty vector that will be filled if the file exists
+ * @param  eigenfaces  Empty matrix that will be filled if the file exists
+ * @param  eigenvalues Empty vector that will be filled if the file exists
+ * @param  path        Path of the files to search for
+ * @return             Returns true if all three files are available; returns false otherwise
+ */
 bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path)
 {
     char fileName[100];
@@ -93,6 +116,17 @@ bool readSavedFaces(VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigen
     return true;
 }
 
+/**
+ * Reads in the face image files from the desired path
+ * and returns faces by reference.
+ *
+ * In the return vector, the string that is recorded is the 5 digit ID associated with
+ * that face image.
+ * 
+ * @param path  Desired path to get faces from
+ * @param faces Empty vector of pair<string, VectorXf> that will be returned with
+ *              all faces in the given path CONCATENATED to the end of the vector
+ */
 void readInFaces(const char *path, vector<pair<string, VectorXf> > &faces)
 {
     DIR *dir;
@@ -136,6 +170,14 @@ void readInFaces(const char *path, vector<pair<string, VectorXf> > &faces)
     }
 }
 
+/**
+ * Writes the given face to the given file name / path
+ * Currently only supports 20x16 and 60x48 images, will crash
+ * otherwise.
+ * 
+ * @param theFace  The desired face to write the file
+ * @param fileName Desired file name to write to
+ */
 void writeFace(VectorXf theFace, char *fileName)
 {
     int rows, cols, levels;
@@ -173,6 +215,18 @@ void writeFace(VectorXf theFace, char *fileName)
     writeImage(fileName, theImage);
 }
 
+/**
+ * Computes the eigenfaces, eigenvalues, and average face of the eigenspace defined by the passed in
+ * training faces.
+ * Additionally, saves the eigenfaces, eigenvalues, and average face to file so that they can be read
+ * in at a later date.
+ * 
+ * @param trainingFaces Vector of training faces that make of the eigenspace
+ * @param averageFace   Empty vector that will be filled by the average face and returned by reference
+ * @param eigenfaces    Empty matrix that will be filled by all eigenfaces and returned by reference
+ * @param eigenvalues   Empty vector that will be filled by all eigenvalues and returned by reference
+ * @param path          Desired path/name to save the average face, eigenfaces, and eigenvalues to
+ */
 void computeEigenFaces(vector<pair<string, VectorXf> > trainingFaces, VectorXf &averageFace, MatrixXf &eigenfaces, VectorXf &eigenvalues, const char *path)
 {
     char fileName[100];
