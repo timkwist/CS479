@@ -239,8 +239,9 @@ void classifierThreshold(const char* resultsPath, VectorXf averageFace, MatrixXf
         cout << "\t" << queryPairs[0].second << endl;
 
 
+        //For High Images 380, 1500, +=5
 
-        for(int threshold = 510; threshold < 615; threshold+=1)
+        for(int threshold = 50; threshold < 600; threshold+=2)
         {
             //Our best match (from the allowed subjects) is less than the threshold 
             //So we have a positive result
@@ -282,7 +283,7 @@ void classifierThreshold(const char* resultsPath, VectorXf averageFace, MatrixXf
 
     //50 non intruders and 817 intruders
 
-    for(int threshold = 510; threshold < 615; threshold+=1)
+    for(int threshold = 50; threshold < 600; threshold+=2)
     {
         float TPRate = counts[threshold].first / (float)trainingFaces.size();
         float FPRate = counts[threshold].second / (float)(queryFaces.size() - trainingFaces.size());

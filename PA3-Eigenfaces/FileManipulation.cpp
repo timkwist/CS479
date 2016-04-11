@@ -140,7 +140,20 @@ void writeFace(VectorXf theFace, char *fileName)
 {
     int rows, cols, levels;
     bool type;
-    readImageHeader("fb_H/00001_930831_fb_a.pgm", rows, cols, levels, type);
+    //readImageHeader("fb_H/00001_930831_fb_a.pgm", rows, cols, levels, type);
+
+    if(theFace.rows() == 320)
+    {
+        rows = 20;
+        cols = 16;
+    }
+    else if(theFace.rows() == 2880)
+    {
+        rows = 60;
+        cols = 48;
+    }
+
+    levels = 255;
 
     ImageType theImage(rows, cols, levels);
 

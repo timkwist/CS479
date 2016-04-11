@@ -100,27 +100,74 @@ int main(int argc, char* argv[])
     //     writeFace(eigenfaces.col(i), faceFileName);
     // }
 
+    // Part B
+
     // trainingFaces.clear();
     // queryFaces.clear();
 
-    readInFaces("./fa2_H", trainingFaces);
-    readInFaces("./fa_H", queryFaces);
+    // readInFaces("./fa2_H", trainingFaces);
+    // readInFaces("./fb_H", queryFaces);
+
+    // cout << "Reading in saved faces for part b, if possible" << endl;
+    // if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa2_H") == false) // faces haven't been computed yet
+    // {
+    //     cout << "No saved faces available, computing faces instead" << endl;
+        
+    //     computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa2_H");
+    // }
+
+    // normalizeEigenFaces(eigenfaces);
+
+    // writeFace(averageFace, "averageFace-PartB.pgm");
+
+    // PCA_PERCENTAGE = .95;
+
+    // classifierThreshold("C-Results/CData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+
+     //Part C
+
+    // readInFaces("./fa_L", trainingFaces);
+    // readInFaces("./fb_L", queryFaces);
+
+    // cout << "Reading in saved faces for part c, if possible" << endl;
+    // if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa_L") == false) // faces haven't been computed yet
+    // {
+    //     cout << "No saved faces available, computing faces instead" << endl;
+        
+    //     computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa2_H");
+    // }
+
+    // normalizeEigenFaces(eigenfaces);
+
+    // writeFace(averageFace, "averageFace-PartC.pgm");
+
+    // runClassifier("PartC-Results/CData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+
+
+     //Part D
+
+    trainingFaces.clear();
+    queryFaces.clear();
+
+    readInFaces("./fa2_L", trainingFaces);
+    readInFaces("./fb_L", queryFaces);
 
     cout << "Reading in saved faces for part b, if possible" << endl;
-    if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa2_H") == false) // faces haven't been computed yet
+    if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa2_L") == false) // faces haven't been computed yet
     {
         cout << "No saved faces available, computing faces instead" << endl;
         
-        computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa2_H");
+        computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa2_L");
     }
 
     normalizeEigenFaces(eigenfaces);
 
-    writeFace(averageFace, "averageFace-PartB.pgm");
+    writeFace(averageFace, "averageFace-PartD.pgm");
 
     PCA_PERCENTAGE = .95;
 
-    classifierThreshold("C-Results/CData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+    classifierThreshold("PartD-CResults/CData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+
 
 
 /*
