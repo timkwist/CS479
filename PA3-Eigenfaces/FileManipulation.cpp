@@ -181,8 +181,6 @@ void readInFaces(const char *path, vector<pair<string, VectorXf> > &faces)
 void writeFace(VectorXf theFace, char *fileName)
 {
     int rows, cols, levels;
-    bool type;
-    //readImageHeader("fb_H/00001_930831_fb_a.pgm", rows, cols, levels, type);
 
     if(theFace.rows() == 320)
     {

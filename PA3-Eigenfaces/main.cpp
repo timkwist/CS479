@@ -14,9 +14,7 @@ using namespace std;
 
 #include "image.h"
 
-
 float PCA_PERCENTAGE    = .80;
-
 
 /* External methods */
 int readImageHeader(char[], int&, int&, int&, bool&);
@@ -56,95 +54,109 @@ int main(int argc, char* argv[])
 
     PCA_PERCENTAGE = atof(argv[1]);
 
+    // Part A
 
-    /**
-     * TRAINING MODE
-     */
-    //================================================
-    // Compute Average Face and Eigenfaces and Eigenvalues
-    //================================================
-
-    // readInFaces("./fa_H", trainingFaces);
-    // readInFaces("./fb_H", queryFaces);
+    readInFaces("./fa_H", trainingFaces);
+    readInFaces("./fb_H", queryFaces);
 
 
-    // cout << "Reading in saved faces, if possible" << endl;
-    // if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa_H") == false) // faces haven't been computed yet
-    // {
-    // 	cout << "No saved faces available, computing faces instead" << endl;
+    cout << "Reading in saved faces, if possible" << endl;
+    if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa_H") == false) // faces haven't been computed yet
+    {
+    	cout << "No saved faces available, computing faces instead" << endl;
         
-    // 	computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa_H");
-    // }
+    	computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa_H");
+    }
 
-    // normalizeEigenFaces(eigenfaces);
+    normalizeEigenFaces(eigenfaces);
 
-    // // Print average face
-    // writeFace(averageFace, "averageFace.pgm");
+    // Print average face
+    writeFace(averageFace, "averageFace.pgm");
 
 
-    // runClassifier("N-Results/NData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+    runClassifier("N-Results/NData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
 
 
     // Print top 10 eigenvalues
-    // char faceFileName[100];
-    // for(int i = 0; i < 10; i++)
-    // {
-    //     sprintf(faceFileName, "largestFace%i.pgm", i + 1);
-    //     writeFace(eigenfaces.col(i), faceFileName);
-    // }
+    char faceFileName[100];
+    for(int i = 0; i < 10; i++)
+    {
+        sprintf(faceFileName, "Part-AlargestFace%i.pgm", i + 1);
+        writeFace(eigenfaces.col(i), faceFileName);
+    }
 
-    // // Print top 10 eigenvalues
-    // for(int i = eigenfaces.cols() - 1; i > eigenfaces.cols() - 1 - 10; i--)
-    // {
-    //     sprintf(faceFileName, "smallestFace%i.pgm", i - eigenfaces.cols() + 2);
-    //     writeFace(eigenfaces.col(i), faceFileName);
-    // }
+    // Print top 10 eigenvalues
+    for(int i = eigenfaces.cols() - 1; i > eigenfaces.cols() - 1 - 10; i--)
+    {
+        sprintf(faceFileName, "Part-AsmallestFace%i.pgm", i - eigenfaces.cols() + 2);
+        writeFace(eigenfaces.col(i), faceFileName);
+    }
 
     // Part B
 
-    // trainingFaces.clear();
-    // queryFaces.clear();
+    trainingFaces.clear();
+    queryFaces.clear();
 
-    // readInFaces("./fa2_H", trainingFaces);
-    // readInFaces("./fb_H", queryFaces);
+    readInFaces("./fa2_H", trainingFaces);
+    readInFaces("./fb_H", queryFaces);
 
-    // cout << "Reading in saved faces for part b, if possible" << endl;
-    // if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa2_H") == false) // faces haven't been computed yet
-    // {
-    //     cout << "No saved faces available, computing faces instead" << endl;
+    cout << "Reading in saved faces for part b, if possible" << endl;
+    if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa2_H") == false) // faces haven't been computed yet
+    {
+        cout << "No saved faces available, computing faces instead" << endl;
         
-    //     computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa2_H");
-    // }
+        computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa2_H");
+    }
 
-    // normalizeEigenFaces(eigenfaces);
+    normalizeEigenFaces(eigenfaces);
 
-    // writeFace(averageFace, "averageFace-PartB.pgm");
+    writeFace(averageFace, "averageFace-PartB.pgm");
 
-    // PCA_PERCENTAGE = .95;
+    PCA_PERCENTAGE = .95;
 
-    // classifierThreshold("C-Results/CData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+    classifierThreshold("C-Results/CData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
 
-     //Part C
+    //Part C
 
-    // readInFaces("./fa_L", trainingFaces);
-    // readInFaces("./fb_L", queryFaces);
+    trainingFaces.clear();
+    queryFaces.clear();
 
-    // cout << "Reading in saved faces for part c, if possible" << endl;
-    // if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa_L") == false) // faces haven't been computed yet
-    // {
-    //     cout << "No saved faces available, computing faces instead" << endl;
+    readInFaces("./fa_L", trainingFaces);
+    readInFaces("./fb_L", queryFaces);
+
+    cout << "Reading in saved faces for part c, if possible" << endl;
+    if(readSavedFaces(averageFace, eigenfaces, eigenvalues, "fa_L") == false) // faces haven't been computed yet
+    {
+        cout << "No saved faces available, computing faces instead" << endl;
         
-    //     computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa2_H");
-    // }
+        computeEigenFaces(trainingFaces, averageFace, eigenfaces, eigenvalues, "fa2_H");
+    }
 
-    // normalizeEigenFaces(eigenfaces);
+    normalizeEigenFaces(eigenfaces);
 
-    // writeFace(averageFace, "averageFace-PartC.pgm");
+    writeFace(averageFace, "averageFace-PartC.pgm");
 
-    // runClassifier("PartC-Results/CData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+    PCA_PERCENTAGE = atof(argv[1]);
+
+    runClassifier("PartC-Results/CData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
+
+    // Print top 10 eigenvalues
+    char faceFileName[100];
+    for(int i = 0; i < 10; i++)
+    {
+        sprintf(faceFileName, "PartC-largestFace%i.pgm", i + 1);
+        writeFace(eigenfaces.col(i), faceFileName);
+    }
+
+    // Print top 10 eigenvalues
+    for(int i = eigenfaces.cols() - 1; i > eigenfaces.cols() - 1 - 10; i--)
+    {
+        sprintf(faceFileName, "PartC-smallestFace%i.pgm", i - eigenfaces.cols() + 2);
+        writeFace(eigenfaces.col(i), faceFileName);
+    }
 
 
-     //Part D
+    //Part D
 
     trainingFaces.clear();
     queryFaces.clear();
@@ -168,45 +180,13 @@ int main(int argc, char* argv[])
 
     classifierThreshold("PartD-CResults/CData", averageFace, eigenfaces, eigenvalues, trainingFaces, queryFaces);
 
-
-
-/*
-
-    //================================================
-    // Interactive: Decide how many faces to keep
-    //================================================
-
-    //================================================
-    // Project training face image onto eigenspace
-    //================================================
-
-    //================================================
-    // Compute representation in this space
-    //================================================
-
-    //================================================
-    // Store coefficients, average face, and eigenfaces
-    //================================================
-
-    /**
-     * TESTING MODE
-     */
-    //================================================
-    // Read in coefficients, average face, eigenfaces
-    //================================================
-
-    //================================================
-    // Evaluate face recognition performance from test set
-    // - Project onto eigenspace
-    // - compute coefficients
-    // - Find closest match in face space
-    //================================================
-
-
-
 }
 
-
+/**
+ * Normalizes each eigenface in a matrix.
+ * 
+ * @param eigenfaces  A matrix of eigen faces to normalize
+ */
 void normalizeEigenFaces(MatrixXf &eigenfaces)
 {
     for(int i = 0; i < eigenfaces.cols(); i++)

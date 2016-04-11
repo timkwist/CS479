@@ -94,13 +94,31 @@ VectorXf projectOntoEigenspace(VectorXf newFace, VectorXf averageFace, MatrixXf 
     return projectedFace + averageFace;
 }
 
+/**
+ * Runs the default classifer that cycles from 1 <= N <= 50 and prints its results to a series of file
+ * in the specified directory. It prints out the correctly / incorrectly matched faces along with the
+ * data used to create the CMC curve.
+ * 
+ * @param  resultsPath      The directory to save the result files.
+ * @param  averageFace      The average face of the face space
+ * @param  eigenfaces       The eigenfaces(eigenvectors) that make up / represent the face space
+ * @param  eigenvalues      The sorted eigenvalues that represent the best eigenfaces to use for
+ *                            classification and information preservation
+ *                            
+ * @param  trainingFaces    A vector of faces that were used to create the eigefaces and eigenvalues
+ * @param  queryFaces       A vector of faces that will be used to query the training data
+ * 
+ */
 void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<pair<string, VectorXf> > trainingFaces, vector<pair<string, VectorXf> > queryFaces)
 {
+    // Perform PCA dimensionality reduction
+
     float eigenValuesSum = eigenvalues.sum();
     float currentEigenTotal = 0;
     int count;
     char fileName[100];
 
+    //Find the number of vectors to preserve PCA_PERCENTAGE of the information
     for(count = 0; currentEigenTotal / eigenValuesSum < PCA_PERCENTAGE && count < eigenvalues.rows(); count++)
     {
         currentEigenTotal += eigenvalues.row(count)(0);
@@ -111,7 +129,9 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
     MatrixXf reducedEigenFaces(averageFace.rows(), count);
 
     reducedEigenFaces = eigenfaces.block(0,0,averageFace.rows(),count);
-    
+        
+    //Project the faces onto the reduced eigenfaces
+
     vector<pair<string, VectorXf> > projectedTrainingFaces, projectedQueryFaces;
 
     for(unsigned int i = 0; i < trainingFaces.size(); i++)
@@ -141,33 +161,38 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
 
     sprintf(fileName, "%s-%i-NImageNames.txt", resultsPath, (int)(PCA_PERCENTAGE*100));
 
-        output.open(fileName);
+    output.open(fileName);
+
+    // Iterate through each query face and see if it can be classified correctly
 
     for(unsigned int i = 0; i < queryFaces.size(); i++)
     {
-        cout << "\rQuery Face: " << i << endl;
         projQueryFace = projectedQueryFaces[i].second;
+
         vector< pair<string, float> > queryPairs; //Pair is training image id (string) and distance (float)
 
+        //We saved this query as a correct / incorrect match
         querySaved = false;
 
+        //Find the distances from this query face to every training face
         for(unsigned int t = 0; t < trainingFaces.size(); t++)
         {
             pair<string, float> newPair(trainingFaces[t].first, distanceInFaceSpace(projQueryFace, projectedTrainingFaces[t].second));
             queryPairs.push_back(newPair);
         }
 
+        // Sort the distances from least to greatest
         sort(queryPairs.begin(), queryPairs.end(), cmp);
 
-
+        // Iterate from n = 1 to 50
         for(int n = 0; n < 50; n++)
         {
-            
 
             if(amongNMostSimilarFaces(queryPairs, n+1, projectedQueryFaces[i].first))
             {
                 N_Performances[n] += 1;
-                if(correct < 3 && !querySaved && n == 1)
+                //Only save a correct match if N = 1 (0 in this case since we start at 0)
+                if(correct < 3 && !querySaved && n == 0)
                 {
                     output << "Cor Query Img " << correct << " ID: " << queryFaces[i].first;
                     output << " Cor Train Img " << correct << " ID: " << queryPairs[0].first;
@@ -178,7 +203,8 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
             }
             else
             {
-                if(incorrect < 3 && !querySaved && n == 1)
+                //Only save an incorrect match if N = 1 (0 in this case since we start at 0)
+                if(incorrect < 3 && !querySaved && n == 0)
                 {
                     output << "Inc Query Img " << incorrect << " ID: " << queryFaces[i].first;
                     output << " Inc Train Img " << incorrect << " ID: " << queryPairs[0].first;
@@ -188,19 +214,6 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
                 }
             }
         }
-
-        // if(amongNMostSimilarFaces(queryPairs, 50, projectedQueryFaces[i].first))
-        // {
-        //     cout << "Among N most similarFaces : Yes";
-        //     correct++;
-        // }
-        // else
-        // {
-        //     cout << "Among N most similarFaces : No";
-        //     incorrect++;
-        // }
-
-        // cout << "\t Percentage Correct So Far = " << ((float)correct / (float)(correct + incorrect)) << endl;
     }
 
     output.close();
@@ -208,7 +221,8 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
     sprintf(fileName, "%s-%i.txt", resultsPath, (int)(PCA_PERCENTAGE*100));
 
     output.open(fileName);
-
+    
+    //Print out the data for the CMC curve
     for(int n = 0; n < 50; n++)
     {
         output << n+1 << "\t" << (N_Performances[n] / (float)queryFaces.size()) << endl;
@@ -216,16 +230,33 @@ void runClassifier(const char* resultsPath, VectorXf averageFace, MatrixXf eigen
 
     output.close();
 
-
 }
 
+/**
+ * Runs the threshold classifer that varies a threshold to determine if a face is allowed or not and 
+ * prints its results to a series of file in the specified directory. It prints out the data to create
+ * the ROC curve.
+ * 
+ * @param  resultsPath      The directory to save the result files.
+ * @param  averageFace      The average face of the face space
+ * @param  eigenfaces       The eigenfaces(eigenvectors) that make up / represent the face space
+ * @param  eigenvalues      The sorted eigenvalues that represent the best eigenfaces to use for
+ *                            classification and information preservation
+ *                            
+ * @param  trainingFaces    A vector of faces that were used to create the eigefaces and eigenvalues
+ * @param  queryFaces       A vector of faces that will be used to query the training data
+ * 
+ */
 void classifierThreshold(const char* resultsPath, VectorXf averageFace, MatrixXf eigenfaces, VectorXf eigenvalues, vector<pair<string, VectorXf> > trainingFaces, vector<pair<string, VectorXf> > queryFaces)
 {
+    // Perform PCA dimensionality reduction
+
     float eigenValuesSum = eigenvalues.sum();
     float currentEigenTotal = 0;
     int count;
     char fileName[100];
 
+    //Find the number of vectors to preserve PCA_PERCENTAGE of the information
     for(count = 0; currentEigenTotal / eigenValuesSum < PCA_PERCENTAGE && count < eigenvalues.rows(); count++)
     {
         currentEigenTotal += eigenvalues.row(count)(0);
@@ -237,13 +268,9 @@ void classifierThreshold(const char* resultsPath, VectorXf averageFace, MatrixXf
 
     reducedEigenFaces = eigenfaces.block(0,0,averageFace.rows(),count);
     
-    vector<pair<string, VectorXf> > projectedTrainingFaces, projectedQueryFaces;
+    //Project the faces onto the reduced eigenfaces
 
-    // for(unsigned int i = 0; i < trainingFaces.size(); i++)
-    // {
-    //     pair<string, VectorXf> temp(trainingFaces[i].first, projectOntoEigenspace(trainingFaces[i].second, averageFace, reducedEigenFaces));
-    //     projectedTrainingFaces.push_back(temp);
-    // }
+    vector<pair<string, VectorXf> > projectedTrainingFaces, projectedQueryFaces;
     
     for(unsigned int i = 0; i < queryFaces.size(); i++)
     {
@@ -260,6 +287,8 @@ void classifierThreshold(const char* resultsPath, VectorXf averageFace, MatrixXf
     pair<int, int> temp(0,0);
 
     vector< pair<int, int> > counts(1800, temp); //first = TP count & second = FP count
+
+    // Iterate through each query face and see if it can be classified correctly
 
     for(unsigned int i = 0; i < projectedQueryFaces.size(); i++)
     {
@@ -278,12 +307,12 @@ void classifierThreshold(const char* resultsPath, VectorXf averageFace, MatrixXf
 
 
         //For High Images 380, 1500, +=5
+        //For Low Images 50, 600, += 2
 
         for(int threshold = 50; threshold < 600; threshold+=2)
         {
             //Our best match (from the allowed subjects) is less than the threshold 
             //So we have a positive result
-
             if(queryPairs[0].second <= threshold)
             {
                 //Check if its true positive or false positive
@@ -298,18 +327,6 @@ void classifierThreshold(const char* resultsPath, VectorXf averageFace, MatrixXf
                     counts[threshold].second++;
                 }
             }
-            else
-            {
-                //Check if its false negative or true negative
-                // if(atoi(projectedQueryFaces[i].first.c_str()) <= 93)
-                // {
-                //     //False negative - We have a query face that is in the training sample (Non-intruder denied acccess)
-                // }
-                // else
-                // {
-                //     //True negative - We have a query face that is NOT in the training sample (Intruder denied access)
-                // }
-            }
         }
 
     }
@@ -319,7 +336,7 @@ void classifierThreshold(const char* resultsPath, VectorXf averageFace, MatrixXf
 
     output.open(fileName);
 
-    //50 non intruders and 817 intruders
+    //Print out data for ROC curve
 
     for(int threshold = 50; threshold < 600; threshold+=2)
     {
@@ -330,8 +347,6 @@ void classifierThreshold(const char* resultsPath, VectorXf averageFace, MatrixXf
     }
 
     output.close();
-
-    //Check each query face against the training set, if any comparisons are below the threshold then they are allowed in
 
 }
     
