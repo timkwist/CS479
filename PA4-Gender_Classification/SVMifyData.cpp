@@ -52,15 +52,9 @@ int main()
 	for(int i = 1; i <= 3; i++) {
 		sprintf(fileName, "trPCA_0%i-new.txt", i);
 		saveNewFile(fileName);
-		sprintf(fileName, "TtrPCA_0%i-new.txt", i);
-		saveNewFile(fileName);
 		sprintf(fileName, "tsPCA_0%i-new.txt", i);
 		saveNewFile(fileName);
-		sprintf(fileName, "TtsPCA_0%i-new.txt", i);
-		saveNewFile(fileName);
 		sprintf(fileName, "valPCA_0%i-new.txt", i);
-		saveNewFile(fileName);
-		sprintf(fileName, "TvalPCA_0%i-new.txt", i);
 		saveNewFile(fileName);
 	}
 	return 0;
