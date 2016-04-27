@@ -1,0 +1,36 @@
+PCs_01 			 eigenvectors of training examples for fold 01
+EVs_01 			 eigenvalues of training examples for fold 01
+
+trPCA_01 			 PCA projected training examples (in columns) for fold 01
+TtrPCA_01 			 target values (labels) of projected training examples for fold 01
+
+valPCA_01 			 PCA projected validation examples (in columns) for fold 01
+TvalPCA_01 			 target values (labels) of projected validation examples for fold 01
+
+tsPCA_01 			 PCA projected test examples (in columns) for fold 01
+TtsPCA_01 			 target values (labels) of projected test examples for fold 01
+
+PCs_02 			 eigenvectors of training examples for fold 02
+EVs_02 			 eigenvalues of training examples for fold 02
+
+trPCA_02 			 PCA projected training examples (in columns) for fold 02
+TtrPCA_02 			 target values (labels) of projected training examples for fold 02
+
+valPCA_02 			 PCA projected validation examples (in columns) for fold 02
+TvalPCA_02 			 target values (labels) of projected validation examples for fold 02
+
+tsPCA_02 			 PCA projected test examples (in columns) for fold 02
+TtsPCA_02 			 target values (labels) of projected test examples for fold 02
+
+PCs_03 			 eigenvectors of training examples for fold 03
+EVs_03 			 eigenvalues of training examples for fold 03
+
+trPCA_03 			 PCA projected training examples (in columns) for fold 03
+TtrPCA_03 			 target values (labels) of projected training examples for fold 03
+
+valPCA_03 			 PCA projected validation examples (in columns) for fold 03
+TvalPCA_03 			 target values (labels) of projected validation examples for fold 03
+
+tsPCA_03 			 PCA projected test examples (in columns) for fold 03
+TtsPCA_03 			 target values (labels) of projected test examples for fold 03
+
