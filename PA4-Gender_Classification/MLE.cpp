@@ -27,7 +27,12 @@ Matrix2f MLE::calculateSampleCovariance(vector<Vector2f> data, Vector2f sampleMe
 VectorXf MLE::calculateSampleMean(vector<VectorXf> data)
 {
 	VectorXf sum;
-	sum << 0.0, 0.0;
+
+	if(data.size() <= 0)
+		return sum;
+
+	sum = VectorXf::Zero( data[0].rows() );
+
 	for(vector<int>::size_type i = 0; i < data.size(); i++)
 	{
 		sum += data[i];
@@ -37,13 +42,17 @@ VectorXf MLE::calculateSampleMean(vector<VectorXf> data)
 
 MatrixXf MLE::calculateSampleCovariance(vector<VectorXf> data, VectorXf sampleMean)
 {
-	MatrixXf sum;
-	sum << 	0.0, 0.0,
-			0.0, 0.0;
+	MatrixXf coVar;
+
+	if(data.size() <= 0)
+		return coVar;
+
+	coVar = MatrixXf::Zero( data[0].rows(), data[0].rows());
+
 	for(vector<int>::size_type i = 0; i <  data.size(); i++)
 	{
-		sum += (sampleMean - data[i])*((sampleMean -data[i]).transpose());
+		coVar += (sampleMean - data[i])*((sampleMean -data[i]).transpose());
 	}
-	return sum / data.size();
+	return coVar / data.size();
 }
 
