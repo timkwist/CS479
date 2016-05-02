@@ -1,0 +1,40 @@
+16_20
+
+01
+RESULTS: 
+    Total tests:    266
+    Correct:        135
+    Percentage:     0.507519
+02
+RESULTS: 
+    Total tests:    266
+    Correct:        128
+    Percentage:     0.481203
+03
+RESULTS: 
+    Total tests:    266
+    Correct:        137
+    Percentage:     0.515038
+
+AVERAGE:
+    Percentage:     0.501253
+
+48_60
+
+01
+RESULTS: 
+    Total tests:    266
+    Correct:        135
+    Percentage:     0.507519
+02
+RESULTS: 
+    Total tests:    266
+    Correct:        128
+    Percentage:     0.481203
+RESULTS: 
+    Total tests:    266
+    Correct:        137
+    Percentage:     0.515038
+
+AVERAGE:
+    Percentage:     0.501253
