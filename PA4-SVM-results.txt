@@ -1,0 +1,431 @@
+==> 16_20-poly01-D1C1000.output <==
+Accuracy = 85.3383% (227/266) (classification)
+
+==> 16_20-poly01-D1C100.output <==
+Accuracy = 85.3383% (227/266) (classification)
+
+==> 16_20-poly01-D1C10.output <==
+Accuracy = 85.3383% (227/266) (classification)
+
+==> 16_20-poly01-D1C1.output <==
+Accuracy = 85.3383% (227/266) (classification)
+
+==> 16_20-poly01-D2C1000.output <==
+Accuracy = 59.0226% (157/266) (classification)
+
+==> 16_20-poly01-D2C100.output <==
+Accuracy = 59.0226% (157/266) (classification)
+
+==> 16_20-poly01-D2C10.output <==
+Accuracy = 59.0226% (157/266) (classification)
+
+==> 16_20-poly01-D2C1.output <==
+Accuracy = 59.0226% (157/266) (classification)
+
+==> 16_20-poly01-D3C1000.output <==
+Accuracy = 63.1579% (168/266) (classification)
+
+==> 16_20-poly01-D3C100.output <==
+Accuracy = 63.1579% (168/266) (classification)
+
+==> 16_20-poly01-D3C10.output <==
+Accuracy = 63.1579% (168/266) (classification)
+
+==> 16_20-poly01-D3C1.output <==
+Accuracy = 63.1579% (168/266) (classification)
+
+==> 16_20-poly02-D1C1000.output <==
+Accuracy = 90.9774% (242/266) (classification)
+
+==> 16_20-poly02-D1C100.output <==
+Accuracy = 90.9774% (242/266) (classification)
+
+==> 16_20-poly02-D1C10.output <==
+Accuracy = 90.9774% (242/266) (classification)
+
+==> 16_20-poly02-D1C1.output <==
+Accuracy = 90.9774% (242/266) (classification)
+
+==> 16_20-poly02-D2C1000.output <==
+Accuracy = 69.1729% (184/266) (classification)
+
+==> 16_20-poly02-D2C100.output <==
+Accuracy = 69.1729% (184/266) (classification)
+
+==> 16_20-poly02-D2C10.output <==
+Accuracy = 69.1729% (184/266) (classification)
+
+==> 16_20-poly02-D2C1.output <==
+Accuracy = 69.1729% (184/266) (classification)
+
+==> 16_20-poly02-D3C1000.output <==
+Accuracy = 91.3534% (243/266) (classification)
+
+==> 16_20-poly02-D3C100.output <==
+Accuracy = 91.3534% (243/266) (classification)
+
+==> 16_20-poly02-D3C10.output <==
+Accuracy = 91.3534% (243/266) (classification)
+
+==> 16_20-poly02-D3C1.output <==
+Accuracy = 91.3534% (243/266) (classification)
+
+==> 16_20-poly03-D1C1000.output <==
+Accuracy = 89.8496% (239/266) (classification)
+
+==> 16_20-poly03-D1C100.output <==
+Accuracy = 89.8496% (239/266) (classification)
+
+==> 16_20-poly03-D1C10.output <==
+Accuracy = 89.8496% (239/266) (classification)
+
+==> 16_20-poly03-D1C1.output <==
+Accuracy = 89.8496% (239/266) (classification)
+
+==> 16_20-poly03-D2C1000.output <==
+Accuracy = 60.9023% (162/266) (classification)
+
+==> 16_20-poly03-D2C100.output <==
+Accuracy = 60.9023% (162/266) (classification)
+
+==> 16_20-poly03-D2C10.output <==
+Accuracy = 60.9023% (162/266) (classification)
+
+==> 16_20-poly03-D2C1.output <==
+Accuracy = 60.9023% (162/266) (classification)
+
+==> 16_20-poly03-D3C1000.output <==
+Accuracy = 73.6842% (196/266) (classification)
+
+==> 16_20-poly03-D3C100.output <==
+Accuracy = 73.6842% (196/266) (classification)
+
+==> 16_20-poly03-D3C10.output <==
+Accuracy = 73.6842% (196/266) (classification)
+
+==> 16_20-poly03-D3C1.output <==
+Accuracy = 73.6842% (196/266) (classification)
+
+==> 16_20-rbf01-G100C1000.output <==
+Accuracy = 85.7143% (228/266) (classification)
+
+==> 16_20-rbf01-G100C100.output <==
+Accuracy = 86.4662% (230/266) (classification)
+
+==> 16_20-rbf01-G100C10.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 16_20-rbf01-G100C1.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 16_20-rbf01-G10C1000.output <==
+Accuracy = 87.218% (232/266) (classification)
+
+==> 16_20-rbf01-G10C100.output <==
+Accuracy = 87.218% (232/266) (classification)
+
+==> 16_20-rbf01-G10C10.output <==
+Accuracy = 87.218% (232/266) (classification)
+
+==> 16_20-rbf01-G10C1.output <==
+Accuracy = 84.9624% (226/266) (classification)
+
+==> 16_20-rbf01-G1C1000.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 16_20-rbf01-G1C100.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 16_20-rbf01-G1C10.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 16_20-rbf01-G1C1.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 16_20-rbf02-G100C1000.output <==
+Accuracy = 91.7293% (244/266) (classification)
+
+==> 16_20-rbf02-G100C100.output <==
+Accuracy = 93.609% (249/266) (classification)
+
+==> 16_20-rbf02-G100C10.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 16_20-rbf02-G100C1.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 16_20-rbf02-G10C1000.output <==
+Accuracy = 90.6015% (241/266) (classification)
+
+==> 16_20-rbf02-G10C100.output <==
+Accuracy = 90.6015% (241/266) (classification)
+
+==> 16_20-rbf02-G10C10.output <==
+Accuracy = 90.6015% (241/266) (classification)
+
+==> 16_20-rbf02-G10C1.output <==
+Accuracy = 90.9774% (242/266) (classification)
+
+==> 16_20-rbf02-G1C1000.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 16_20-rbf02-G1C100.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 16_20-rbf02-G1C10.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 16_20-rbf02-G1C1.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 16_20-rbf03-G100C1000.output <==
+Accuracy = 89.8496% (239/266) (classification)
+
+==> 16_20-rbf03-G100C100.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 16_20-rbf03-G100C10.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 16_20-rbf03-G100C1.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 16_20-rbf03-G10C1000.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 16_20-rbf03-G10C100.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 16_20-rbf03-G10C10.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 16_20-rbf03-G10C1.output <==
+Accuracy = 87.218% (232/266) (classification)
+
+==> 16_20-rbf03-G1C1000.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 16_20-rbf03-G1C100.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 16_20-rbf03-G1C10.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 16_20-rbf03-G1C1.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 48_60-poly01-D1C1000.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 48_60-poly01-D1C100.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 48_60-poly01-D1C10.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 48_60-poly01-D1C1.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 48_60-poly01-D2C1000.output <==
+Accuracy = 58.6466% (156/266) (classification)
+
+==> 48_60-poly01-D2C100.output <==
+Accuracy = 58.6466% (156/266) (classification)
+
+==> 48_60-poly01-D2C10.output <==
+Accuracy = 58.6466% (156/266) (classification)
+
+==> 48_60-poly01-D2C1.output <==
+Accuracy = 58.6466% (156/266) (classification)
+
+==> 48_60-poly01-D3C1000.output <==
+Accuracy = 69.9248% (186/266) (classification)
+
+==> 48_60-poly01-D3C100.output <==
+Accuracy = 69.9248% (186/266) (classification)
+
+==> 48_60-poly01-D3C10.output <==
+Accuracy = 69.9248% (186/266) (classification)
+
+==> 48_60-poly01-D3C1.output <==
+Accuracy = 69.9248% (186/266) (classification)
+
+==> 48_60-poly02-D1C1000.output <==
+Accuracy = 91.7293% (244/266) (classification)
+
+==> 48_60-poly02-D1C100.output <==
+Accuracy = 91.7293% (244/266) (classification)
+
+==> 48_60-poly02-D1C10.output <==
+Accuracy = 91.7293% (244/266) (classification)
+
+==> 48_60-poly02-D1C1.output <==
+Accuracy = 91.7293% (244/266) (classification)
+
+==> 48_60-poly02-D2C1000.output <==
+Accuracy = 66.9173% (178/266) (classification)
+
+==> 48_60-poly02-D2C100.output <==
+Accuracy = 66.9173% (178/266) (classification)
+
+==> 48_60-poly02-D2C10.output <==
+Accuracy = 66.9173% (178/266) (classification)
+
+==> 48_60-poly02-D2C1.output <==
+Accuracy = 66.9173% (178/266) (classification)
+
+==> 48_60-poly02-D3C1000.output <==
+Accuracy = 84.9624% (226/266) (classification)
+
+==> 48_60-poly02-D3C100.output <==
+Accuracy = 84.9624% (226/266) (classification)
+
+==> 48_60-poly02-D3C10.output <==
+Accuracy = 84.9624% (226/266) (classification)
+
+==> 48_60-poly02-D3C1.output <==
+Accuracy = 84.9624% (226/266) (classification)
+
+==> 48_60-poly03-D1C1000.output <==
+Accuracy = 89.4737% (238/266) (classification)
+
+==> 48_60-poly03-D1C100.output <==
+Accuracy = 89.4737% (238/266) (classification)
+
+==> 48_60-poly03-D1C10.output <==
+Accuracy = 89.4737% (238/266) (classification)
+
+==> 48_60-poly03-D1C1.output <==
+Accuracy = 89.4737% (238/266) (classification)
+
+==> 48_60-poly03-D2C1000.output <==
+Accuracy = 65.0376% (173/266) (classification)
+
+==> 48_60-poly03-D2C100.output <==
+Accuracy = 65.0376% (173/266) (classification)
+
+==> 48_60-poly03-D2C10.output <==
+Accuracy = 65.0376% (173/266) (classification)
+
+==> 48_60-poly03-D2C1.output <==
+Accuracy = 65.0376% (173/266) (classification)
+
+==> 48_60-poly03-D3C1000.output <==
+Accuracy = 81.203% (216/266) (classification)
+
+==> 48_60-poly03-D3C100.output <==
+Accuracy = 81.203% (216/266) (classification)
+
+==> 48_60-poly03-D3C10.output <==
+Accuracy = 81.203% (216/266) (classification)
+
+==> 48_60-poly03-D3C1.output <==
+Accuracy = 81.203% (216/266) (classification)
+
+==> 48_60-rbf01-G100C1000.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 48_60-rbf01-G100C100.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 48_60-rbf01-G100C10.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 48_60-rbf01-G100C1.output <==
+Accuracy = 49.6241% (132/266) (classification)
+
+==> 48_60-rbf01-G10C1000.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 48_60-rbf01-G10C100.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 48_60-rbf01-G10C10.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 48_60-rbf01-G10C1.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 48_60-rbf01-G1C1000.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 48_60-rbf01-G1C100.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 48_60-rbf01-G1C10.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 48_60-rbf01-G1C1.output <==
+Accuracy = 49.2481% (131/266) (classification)
+
+==> 48_60-rbf02-G100C1000.output <==
+Accuracy = 92.1053% (245/266) (classification)
+
+==> 48_60-rbf02-G100C100.output <==
+Accuracy = 92.1053% (245/266) (classification)
+
+==> 48_60-rbf02-G100C10.output <==
+Accuracy = 94.3609% (251/266) (classification)
+
+==> 48_60-rbf02-G100C1.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 48_60-rbf02-G10C1000.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 48_60-rbf02-G10C100.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 48_60-rbf02-G10C10.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 48_60-rbf02-G10C1.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 48_60-rbf02-G1C1000.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 48_60-rbf02-G1C100.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 48_60-rbf02-G1C10.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 48_60-rbf02-G1C1.output <==
+Accuracy = 48.1203% (128/266) (classification)
+
+==> 48_60-rbf03-G100C1000.output <==
+Accuracy = 89.0977% (237/266) (classification)
+
+==> 48_60-rbf03-G100C100.output <==
+Accuracy = 89.0977% (237/266) (classification)
+
+==> 48_60-rbf03-G100C10.output <==
+Accuracy = 88.7218% (236/266) (classification)
+
+==> 48_60-rbf03-G100C1.output <==
+Accuracy = 50.3759% (134/266) (classification)
+
+==> 48_60-rbf03-G10C1000.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 48_60-rbf03-G10C100.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 48_60-rbf03-G10C10.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 48_60-rbf03-G10C1.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 48_60-rbf03-G1C1000.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 48_60-rbf03-G1C100.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 48_60-rbf03-G1C10.output <==
+Accuracy = 48.4962% (129/266) (classification)
+
+==> 48_60-rbf03-G1C1.output <==
+Accuracy = 48.4962% (129/266) (classification)
